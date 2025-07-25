@@ -15,16 +15,10 @@
   },
   "imports": {
     "@std/path": "jsr:@std/path@1",
+    "@std/fs": "jsr:@std/fs@1",
     "@std/fs/expand-glob": "jsr:@std/fs@1/expand-glob",
     "gfm": "jsr:@deno/gfm@0.11.0",
     "preact": "npm:preact@^10.26.9",
     "fresh": "jsr:@fresh/core@^2.0.0-alpha.46"
-  },
-  "lint": {
-    "rules": {
-      "tags": ["recommended", "fresh", "jsr", "jsx", "react"],
-      "exclude": ["no-window"],
-      "include": ["no-console"]
-    }
   }
 }

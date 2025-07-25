@@ -1,4 +1,4 @@
-import type { FreshContext, Manifest, Plugin } from "fresh";
+import type { Builder } from "fresh/dev";
 import * as path from "@std/path";
 import { copy } from "@std/fs";
 import { emptyDir } from "@std/fs";
@@ -22,35 +22,35 @@ export interface SSGPluginOptions {
   baseUrl?: string;
 }
 
-export function ssgPlugin(options: SSGPluginOptions = {}): Plugin {
+export function ssgPlugin(
+  builder: Builder,
+  options: SSGPluginOptions = {}
+): void {
   const { outputDir = "_fresh/site", baseUrl = "http://localhost" } = options;
 
-  return {
-    name: "freshpress-ssg",
-    async finish(ctx: FreshContext) {
-      const { manifest, handler } = ctx;
-      const outputDirPath = path.resolve(Deno.cwd(), outputDir);
+  builder.onBuild("ssg-generation", async () => {
+    const outputDirPath = path.resolve(Deno.cwd(), outputDir);
 
-      console.log("🏗️  Starting static site generation...");
+    console.log("🏗️  Starting static site generation...");
 
-      // 1. Ensure the output directory is clean
-      await emptyDir(outputDirPath);
+    // 1. Ensure the output directory is clean
+    await emptyDir(outputDirPath);
 
-      // 2. Discover all routes to render
-      const routesToRender = await discoverRoutes(
-        manifest,
-        options.dynamicRoutes
-      );
-      console.log(`Discovered ${routesToRender.size} routes to pre-render.`);
+    // 2. Discover all routes to render
+    const routesToRender = await discoverRoutes(
+      builder.config.manifest,
+      options.dynamicRoutes
+    );
+    console.log(`Discovered ${routesToRender.size} routes to pre-render.`);
 
-      // 3. Render each route and save to a file
-      for (const route of routesToRender) {
-        const url = new URL(route, baseUrl);
-        const request = new Request(url);
-        const response = await handler(request, {
-          localAddr: { transport: "tcp", hostname: "127.0.0.1", port: 80 },
-          remoteAddr: { transport: "tcp", hostname: "127.0.0.1", port: 80 },
-        });
+    // 3. Render each route and save to a file
+    for (const route of routesToRender) {
+      const url = new URL(route, baseUrl);
+      const request = new Request(url);
+
+      // 使用 builder 的渲染方法
+      try {
+        const response = await builder.render(request);
 
         if (
           response.status === 200 &&
@@ -65,40 +65,44 @@ export function ssgPlugin(options: SSGPluginOptions = {}): Plugin {
             }, content-type: ${response.headers.get("content-type")})`
           );
         }
+      } catch (error) {
+        console.warn(`Failed to render ${route}:`, error);
       }
+    }
 
-      // 4. Copy static assets
-      const staticDir = path.join(Deno.cwd(), "static");
-      try {
-        await copy(staticDir, path.join(outputDirPath), { overwrite: true });
-        console.log("📂 Copied static assets.");
-      } catch (err) {
-        if (err instanceof Deno.errors.NotFound) {
-          // Ignore if static directory doesn't exist
-        } else {
-          throw err;
-        }
+    // 4. Copy static assets
+    const staticDir = path.join(Deno.cwd(), "static");
+    try {
+      await copy(staticDir, path.join(outputDirPath), { overwrite: true });
+      console.log("📂 Copied static assets.");
+    } catch (err) {
+      if (err instanceof Deno.errors.NotFound) {
+        // Ignore if static directory doesn't exist
+      } else {
+        throw err;
       }
+    }
 
-      console.log("✅ Static site generation completed!");
-      console.log(`Your static site is ready in the '${outputDir}' directory.`);
-    },
-  };
+    console.log("✅ Static site generation completed!");
+    console.log(`Your static site is ready in the '${outputDir}' directory.`);
+  });
 }
 
 async function discoverRoutes(
-  manifest: Manifest,
+  manifest: any, // 暂时使用 any，避免类型问题
   dynamicRoutesFn?: () => Promise<string[]> | string[]
 ): Promise<Set<string>> {
   const routes = new Set<string>();
 
   // Add static routes from the manifest
-  for (const routePath in manifest.routes) {
-    // Filter out API routes and middleware
-    if (routePath.startsWith("/api/")) {
-      continue;
+  if (manifest && manifest.routes) {
+    for (const routePath in manifest.routes) {
+      // Filter out API routes and middleware
+      if (routePath.startsWith("/api/")) {
+        continue;
+      }
+      routes.add(routePath);
     }
-    routes.add(routePath);
   }
 
   // Add dynamic routes if provided
