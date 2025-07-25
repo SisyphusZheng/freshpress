@@ -7,6 +7,12 @@
     "dev": "deno run --watch -A src/mod.ts",
     "test": "deno test -A"
   },
+  "compilerOptions": {
+    "lib": ["dom", "dom.asynciterable", "deno.ns", "deno.unstable"],
+    "jsx": "precompile",
+    "jsxImportSource": "preact",
+    "jsxPrecompileSkipElements": ["a", "img", "source", "body", "html", "head"]
+  },
   "imports": {
     "@std/fs": "jsr:@std/fs@1",
     "@std/path": "jsr:@std/path@1",

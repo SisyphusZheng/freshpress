@@ -8,6 +8,12 @@
     "include": ["src/**/*.ts", "deno.json", "README.md"],
     "exclude": ["**/*_test.*", "*.todo"]
   },
+  "compilerOptions": {
+    "lib": ["dom", "dom.asynciterable", "deno.ns", "deno.unstable"],
+    "jsx": "precompile",
+    "jsxImportSource": "preact",
+    "jsxPrecompileSkipElements": ["a", "img", "source", "body", "html", "head"]
+  },
   "imports": {
     "@std/fmt/colors": "jsr:@std/fmt@^1.0.8/colors",
     "@std/path": "jsr:@std/path@1",
