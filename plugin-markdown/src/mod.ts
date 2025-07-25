@@ -2,7 +2,7 @@ import type { Plugin } from "fresh";
 import { render, CSS } from "gfm";
 import * as path from "@std/path";
 import { glob } from "@std/fs/glob";
-import { type VNode } from "preact";
+import { type VNode, createElement as h } from "preact";
 
 export interface MarkdownPluginOptions {
   /** The directory where your Markdown files are located. Defaults to `./posts`. */
@@ -29,19 +29,21 @@ export function markdownPlugin(options: MarkdownPluginOptions = {}): Plugin {
         const markdown = await Deno.readTextFile(file.path);
         const body = render(markdown);
 
-        const Component = (): VNode => (
-          <>
-            <style dangerouslySetInnerHTML={{ __html: CSS }} />
-            <main
-              class="markdown-body p-4"
-              data-color-mode="light"
-              data-light-theme="light"
-              data-dark-theme="dark"
-            >
-              <div dangerouslySetInnerHTML={{ __html: body }} />
-            </main>
-          </>
-        );
+        const Component = (): VNode => {
+          return h("div", {}, [
+            h("style", { dangerouslySetInnerHTML: { __html: CSS } }),
+            h(
+              "main",
+              {
+                class: "markdown-body p-4",
+                "data-color-mode": "light",
+                "data-light-theme": "light",
+                "data-dark-theme": "dark",
+              },
+              [h("div", { dangerouslySetInnerHTML: { __html: body } })]
+            ),
+          ]);
+        };
 
         const routePath =
           "/" +
