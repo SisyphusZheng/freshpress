@@ -1,7 +1,7 @@
 import type { Plugin } from "fresh";
 import { render, CSS } from "gfm";
 import * as path from "@std/path";
-import { glob } from "@std/fs/glob";
+import { expandGlob } from "@std/fs/expand-glob";
 import { type VNode, createElement as h } from "preact";
 
 export interface MarkdownPluginOptions {
