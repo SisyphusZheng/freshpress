@@ -3,15 +3,15 @@
   "version": "0.1.0",
   "license": "MIT",
   "exports": "./src/mod.ts",
-  "tasks": {
-    "dev": "deno run --watch -A src/mod.ts",
-    "test": "deno test -A"
-  },
   "compilerOptions": {
     "lib": ["dom", "dom.asynciterable", "deno.ns", "deno.unstable"],
     "jsx": "precompile",
     "jsxImportSource": "preact",
     "jsxPrecompileSkipElements": ["a", "img", "source", "body", "html", "head"]
+  },
+  "tasks": {
+    "dev": "deno run --watch -A src/mod.ts",
+    "test": "deno test -A"
   },
   "imports": {
     "@std/fs": "jsr:@std/fs@1",

@@ -3,16 +3,16 @@
   "version": "0.1.0",
   "license": "MIT",
   "exports": "./src/mod.ts",
-  "exclude": ["**/tmp/*"],
-  "publish": {
-    "include": ["src/**/*.ts", "deno.json", "README.md"],
-    "exclude": ["**/*_test.*", "*.todo"]
-  },
   "compilerOptions": {
     "lib": ["dom", "dom.asynciterable", "deno.ns", "deno.unstable"],
     "jsx": "precompile",
     "jsxImportSource": "preact",
     "jsxPrecompileSkipElements": ["a", "img", "source", "body", "html", "head"]
+  },
+  "exclude": ["**/tmp/*"],
+  "publish": {
+    "include": ["src/**/*.ts", "deno.json", "README.md"],
+    "exclude": ["**/*_test.*", "*.todo"]
   },
   "imports": {
     "@std/fmt/colors": "jsr:@std/fmt@^1.0.8/colors",
