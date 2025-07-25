@@ -2,9 +2,9 @@
   "name": "@freshpress/plugin-ssg",
   "version": "0.1.0",
   "license": "MIT",
-  "exports": "./mod.ts",
+  "exports": "./src/mod.ts",
   "tasks": {
-    "dev": "deno run --watch -A mod.ts",
+    "dev": "deno run --watch -A src/mod.ts",
     "test": "deno test -A"
   }
 }
