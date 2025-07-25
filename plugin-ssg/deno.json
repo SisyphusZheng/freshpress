@@ -6,5 +6,10 @@
   "tasks": {
     "dev": "deno run --watch -A src/mod.ts",
     "test": "deno test -A"
+  },
+  "imports": {
+    "@std/fs": "jsr:@std/fs@1",
+    "@std/path": "jsr:@std/path@1",
+    "fresh": "jsr:@fresh/core@^2.0.0-alpha.46"
   }
 }

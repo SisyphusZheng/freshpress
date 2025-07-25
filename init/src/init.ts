@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-console
-import * as colors from "jsr:/@std/fmt@^1.0.7/colors";
-import * as path from "jsr:@std/path@1";
+import * as colors from "@std/fmt";
+import * as path from "@std/path";
 
 // Keep these as is, as we replace these version in our release script
 const FRESH_VERSION = "2.0.0-alpha.45";
@@ -478,7 +478,7 @@ if (Deno.args.includes("build")) {
       "@preact/signals": `npm:@preact/signals@^${PREACT_SIGNALS_VERSION}`,
       "@freshpress/plugin-ssg": `jsr:@freshpress/plugin-ssg@^${FRESHPRESS_SSG_VERSION}`,
       "@freshpress/plugin-markdown": `jsr:@freshpress/plugin-markdown@^${FRESHPRESS_MARKDOWN_VERSION}`,
-      "gfm": "https://deno.land/x/gfm@0.6.0/mod.ts",
+      gfm: "https://deno.land/x/gfm@0.6.0/mod.ts",
       "@std/path": "jsr:@std/path@1",
       "@std/fs/glob": "jsr:@std/fs@^1.0.0-rc.8/glob",
     } as Record<string, string>,

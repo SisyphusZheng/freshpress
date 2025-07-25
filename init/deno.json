@@ -7,5 +7,12 @@
   "publish": {
     "include": ["src/**/*.ts", "deno.json", "README.md"],
     "exclude": ["**/*_test.*", "*.todo"]
+  },
+  "imports": {
+    "@freshpress/plugin-ssg": "../plugin-ssg",
+    "@freshpress/plugin-markdown": "../plugin-markdown",
+    "@std/fmt": "jsr:@std/fmt@^1.0.7",
+    "@std/path": "jsr:@std/path@1",
+    "@std/cli": "jsr:@std/cli@^1.0.19"
   }
 }

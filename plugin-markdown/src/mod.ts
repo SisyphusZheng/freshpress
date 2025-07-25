@@ -1,4 +1,4 @@
-import type { Plugin } from "$fresh/server.ts";
+import type { Plugin } from "fresh";
 import { render, CSS } from "gfm";
 import * as path from "@std/path";
 import { glob } from "@std/fs/glob";

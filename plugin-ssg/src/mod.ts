@@ -1,7 +1,7 @@
-import type { FreshContext, Manifest, Plugin } from "$fresh/server.ts";
+import type { FreshContext, Manifest, Plugin } from "fresh";
 import * as path from "@std/path";
-import { copy } from "@std/fs/copy";
-import { emptyDir } from "@std/fs/empty_dir";
+import { copy } from "@std/fs";
+import { emptyDir } from "@std/fs";
 
 export interface SSGPluginOptions {
   /**
