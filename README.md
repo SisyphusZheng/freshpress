@@ -1,20 +1,56 @@
-## FreshPress
-### 🚧 Project Pivot: From Website Prototype to SSG Framework 🚧
+# FreshPress
 
-This repository initially started as a static website prototype built with Fresh v2 (aiming to quickly launch a documentation site/blog). However, during development, identified key pain points:
+> A Static Site Generator + Hybrid Rendering Documentation Framework for Fresh
 
-Redundant development of common features (e.g., Markdown parsing, i18n support)
-Lack of flexible SSG tools fully optimized for Fresh v2’s island architecture and edge capabilities
+FreshPress is a modern documentation framework built entirely on [Fresh](https://fresh.deno.dev). Through a plugin-based architecture, it provides features like Static Site Generation (SSG), search, and Markdown support, all while preserving the advantages of Fresh's island architecture.
 
-As a result, pivoted to transform this into the FreshPress SSG Framework—leveraging the technical foundations of the website prototype to extract reusable plugin systems and a minimalist CLI, enabling developers to build static sites via a modular, Lego-like approach.
+## 🚀 Features
 
-### 🌟 Architecture Design
-1. Core Components
-- @freshpress/cli: Command-line interface providing init, build, and dev commands. Planned
+- 🏝️ **Island Architecture**: Built on Fresh, zero client-side JavaScript, with on-demand hydration.
+- 📝 **Markdown Support**: Powerful Markdown processing capabilities via a dedicated plugin.
+- ⚡ **Performance Optimized**: Static generation + on-demand rendering.
+- 🧩 **Pluggable**: Extensible plugin ecosystem.
 
-2. Plugin System
-- @freshpress/fresh-plugin-md	render markdown content Development
-- @freshpress/fresh-plugin-search	Dependency-free full-text search	Planned
-- @freshpress/fresh-plugin-i18n	Multi-language content routing	Planned
-- [ **@freshpress/fresh-plugin-screenshot**](https://github.com/SisyphusZheng/fresh-plugins-screenshot) Simple Screenshot plugin can be use right now
-- @freshpress/fresh-plugin-freshtify	ui lib build by web components and tailwind	Planned
+## 🗺️ Roadmap
+
+We are actively working on expanding the FreshPress ecosystem. Here are some of the features and plugins planned for future releases:
+
+- **Sitemap Generation**: Automatic `sitemap.xml` generation for better SEO.
+- **`@freshpress/plugin-search`**: A dependency-free, client-side full-text search plugin.
+- **`@freshpress/plugin-i18n`**: A plugin for multi-language content routing and internationalization.
+
+## 📦 Package Structure
+
+This is a monorepo project containing the following core packages:
+
+- [`@freshpress/init`](./init) - A command-line tool to scaffold a new FreshPress project.
+- [`@freshpress/plugin-ssg`](./plugin-ssg) - A plugin for Static Site Generation (SSG).
+- [`@freshpress/plugin-markdown`](./plugin-md) - A plugin to render Markdown content as pages.
+
+## 🏁 Quick Start
+
+```bash
+# Create a new project
+deno run -A jsr:@freshpress/init my-docs
+
+# Change into the project directory
+cd my-docs
+
+# Start the development server
+deno task dev
+
+# Build the project for production
+deno task build
+```
+
+## 📖 Documentation
+
+The official documentation is under development.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please see the [Contributing Guide](CONTRIBUTING.md).
+
+## 📄 License
+
+MIT License - See the [LICENSE](LICENSE) file

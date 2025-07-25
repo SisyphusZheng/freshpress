@@ -1,0 +1,11 @@
+{
+  "name": "@freshpress/plugins-ssg",
+  "version": "0.1.0",
+  "exports": {
+    ".": "./mod.ts"
+  },
+  "tasks": {
+    "dev": "deno run --watch -A mod.ts",
+    "test": "deno test -A"
+  }
+}

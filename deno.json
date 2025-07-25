@@ -1,45 +1,43 @@
 {
-  "name": "@zhi/freshpress",
-  "version": "0.2.0",
-  "description": "A description of your project",
-  "main": "./mod.ts",
-  "exports": "./mod.ts",
-  "tasks": {
-    "init": "deno run -A scripts/init-directories.ts",
-    "gen-config": "deno run -A --unstable-sloppy-imports scripts/config-helper.ts",
-    "load-config": "deno run -A --unstable-sloppy-imports scripts/load-config.ts",
-    "preload": "deno run -A --unstable-sloppy-imports scripts/preload.ts",
-    "dev": "deno task preload && deno run -A --unstable-sloppy-imports --watch=static/,routes/,plugins/,themes/ scripts/dev.ts",
-    "build": "GITHUB_CLIENT_ID=fake GITHUB_CLIENT_SECRET=fake FACEBOOK_CLIENT_ID=fake FACEBOOK_CLIENT_SECRET=fake GOOGLE_CLIENT_ID=fake GOOGLE_CLIENT_SECRET=fake deno run -A scripts/build-search-index.ts && deno run -A --unstable-kv dev.ts build",
-    "preview": "deno run -A --unstable-sloppy-imports scripts/preview.ts",
-    "start": "deno run -A dev.ts",
-    "search:index": "deno run -A scripts/build-search-index.ts",
-    "plugin:list": "deno run -A --unstable-sloppy-imports mod.ts plugin list",
-    "plugin:add": "deno run -A --unstable-sloppy-imports mod.ts plugin add",
-    "plugin:remove": "deno run -A --unstable-sloppy-imports mod.ts plugin remove",
-    "plugin:update": "deno run -A --unstable-sloppy-imports mod.ts plugin update",
-    "plugin:enable": "deno run -A --unstable-sloppy-imports scripts/toggle-plugin.ts",
-    "plugin:disable": "deno run -A --unstable-sloppy-imports scripts/toggle-plugin.ts",
-    "theme:list": "deno run -A --unstable-sloppy-imports mod.ts theme list",
-    "theme:add": "deno run -A --unstable-sloppy-imports mod.ts theme add",
-    "theme:remove": "deno run -A --unstable-sloppy-imports mod.ts theme remove",
-    "theme:update": "deno run -A --unstable-sloppy-imports mod.ts theme update",
-    "config:get": "deno run -A --unstable-sloppy-imports mod.ts config get",
-    "config:set": "deno run -A --unstable-sloppy-imports mod.ts config set",
-    "config:list": "deno run -A --unstable-sloppy-imports mod.ts config list",
-    "create": "deno run -A --unstable-sloppy-imports scripts/create.ts",
-    "deploy": "deno run -A --unstable-sloppy-imports scripts/deploy.ts",
-    "publish": "deno publish",
-    "test": "deno test -A",
-    "clean": "deno run -A --unstable-sloppy-imports mod.ts clean",
-    "update": "deno run -A --unstable-sloppy-imports mod.ts update"
+  "nodeModulesDir": "auto",
+  "workspace": [
+    "./docs",
+    "./example",
+    "./init",
+    "./plugins-md",
+    "./plugins-ssg"
+  ],
+  "name": "@freshpress/freshpress",
+  "version": "0.0.1",
+  "license": "MIT",
+  "imports": {
+    "@tailwindcss/postcss": "npm:@tailwindcss/postcss@^4.1.10",
+    "tailwindcss": "npm:tailwindcss@^4.1.10",
+    "postcss": "npm:postcss@8.5.6",
+
+    "ts-morph": "npm:ts-morph@^26.0.0",
+
+    "@std/front-matter": "jsr:@std/front-matter@^1.0.5",
+    "github-slugger": "npm:github-slugger@^2.0.0",
+    "marked": "npm:marked@^15.0.11",
+    "marked-mangle": "npm:marked-mangle@^1.1.9",
+    "gfm": "jsr:@deno/gfm",
+    "prismjs": "npm:prismjs@^1.29.0"
   },
-  "importMap": "./import_map.json",
   "compilerOptions": {
-    "jsx": "react-jsx",
+    "lib": ["dom", "dom.asynciterable", "deno.ns", "deno.unstable"],
+    "jsx": "precompile",
     "jsxImportSource": "preact",
-    "lib": ["deno.ns", "dom"],
-    "allowImportingTsExtensions": true,
-    "checkJs": false
+    "jsxPrecompileSkipElements": ["a", "img", "source", "body", "html", "head"]
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended", "fresh", "jsr", "jsx", "react"],
+      "exclude": ["no-window"],
+      "include": ["no-console"]
+    }
+  },
+  "fmt": {
+    "exclude": ["./www/static/**/*.svg"]
   }
 }

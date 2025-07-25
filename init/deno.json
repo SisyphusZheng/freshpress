@@ -1,0 +1,11 @@
+{
+  "name": "@freshpress/init",
+  "version": "0.0.1",
+  "license": "MIT",
+  "exports": "./src/mod.ts",
+  "exclude": ["**/tmp/*"],
+  "publish": {
+    "include": ["src/**/*.ts", "deno.json", "README.md"],
+    "exclude": ["**/*_test.*", "*.todo"]
+  }
+}
