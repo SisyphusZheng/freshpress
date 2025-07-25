@@ -1,4 +1,3 @@
-/// <reference types="https://deno.land/x/deno/runtime/mod.ts" />
 import type { FreshContext, Manifest, Plugin } from "$fresh/server.ts";
 import * as path from "@std/path";
 import { copy } from "@std/fs/copy";

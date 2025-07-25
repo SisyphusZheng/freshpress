@@ -1,8 +1,8 @@
 {
   "name": "@freshpress/init",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "license": "MIT",
-  "exports": "./src/mod.ts",
+  "exports": "./mod.ts",
   "exclude": ["**/tmp/*"],
   "publish": {
     "include": ["src/**/*.ts", "deno.json", "README.md"],
