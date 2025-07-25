@@ -1,6 +1,6 @@
 {
   "nodeModulesDir": "auto",
-  "workspace": ["./init", "./plugins-md", "./plugins-ssg"],
+  "workspace": ["./init", "./plugin-markdown", "./plugin-ssg"],
   "name": "@freshpress/freshpress",
   "version": "0.0.1",
   "license": "MIT",
