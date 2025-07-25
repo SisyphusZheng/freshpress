@@ -42,7 +42,10 @@ export async function generateStaticSite(options: SSGPluginOptions = {}) {
     await copy(buildDir, outputDirPath, { overwrite: true });
     console.log("📂 Copied build output.");
   } catch (err) {
-    console.warn("Warning: Could not copy build output:", err.message);
+    console.warn(
+      "Warning: Could not copy build output:",
+      (err as Error).message
+    );
   }
 
   const staticDir = path.join(Deno.cwd(), "static");
@@ -53,7 +56,10 @@ export async function generateStaticSite(options: SSGPluginOptions = {}) {
     console.log("📂 Copied static assets.");
   } catch (err) {
     if (!(err instanceof Deno.errors.NotFound)) {
-      console.warn("Warning: Could not copy static assets:", err.message);
+      console.warn(
+        "Warning: Could not copy static assets:",
+        (err as Error).message
+      );
     }
   }
 
