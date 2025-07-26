@@ -53,16 +53,22 @@ async function generateRssXml(options: RssPluginOptions): Promise<string> {
     <title>${escapeXml(options.siteTitle ?? "My Fresh Feed")}</title>
     <description>Fresh site updates</description>
     <link>${escapeXml(options.siteLink ?? "https://your-site.com")}</link>
-    <atom:link href="${escapeXml(
-      options.siteLink ?? "https://your-site.com"
-    )}/rss.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="${
+    escapeXml(
+      options.siteLink ?? "https://your-site.com",
+    )
+  }/rss.xml" rel="self" type="application/rss+xml" />
     <language>${options.language ?? "en-us"}</language>
-    <copyright>${escapeXml(
-      options.copyright ?? "All rights reserved"
-    )}</copyright>
-    <managingEditor>${escapeXml(
-      options.managingEditor ?? "editor@example.com (Editor)"
-    )}</managingEditor>
+    <copyright>${
+    escapeXml(
+      options.copyright ?? "All rights reserved",
+    )
+  }</copyright>
+    <managingEditor>${
+    escapeXml(
+      options.managingEditor ?? "editor@example.com (Editor)",
+    )
+  }</managingEditor>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>`;
 
   posts.forEach((post) => {
@@ -74,17 +80,19 @@ async function generateRssXml(options: RssPluginOptions): Promise<string> {
       <pubDate>${post.published.toUTCString()}</pubDate>
       <description><![CDATA[${post.description}]]></description>
       ${
-        post.content
-          ? `<content:encoded><![CDATA[${post.content}]]></content:encoded>`
-          : ""
-      }
+      post.content
+        ? `<content:encoded><![CDATA[${post.content}]]></content:encoded>`
+        : ""
+    }
       ${
-        post.author
-          ? `<author>${escapeXml(post.author.email ?? "")} (${escapeXml(
-              post.author.name ?? ""
-            )})</author>`
-          : ""
-      }
+      post.author
+        ? `<author>${escapeXml(post.author.email ?? "")} (${
+          escapeXml(
+            post.author.name ?? "",
+          )
+        })</author>`
+        : ""
+    }
     </item>`;
   });
 
@@ -98,7 +106,7 @@ async function generateRssXml(options: RssPluginOptions): Promise<string> {
 // 插件函数（参考 Tailwind 风格）
 export function rssFeed(
   builder: Builder,
-  options: RssPluginOptions = {}
+  options: RssPluginOptions = {},
 ): void {
   const transformOptions = {
     pluginName: "rss_feed",
