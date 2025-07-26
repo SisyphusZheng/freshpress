@@ -12,9 +12,6 @@ const TAILWINDCSS_VERSION = "4.1.10";
 const TAILWINDCSS_POSTCSS_VERSION = "4.1.10";
 const POSTCSS_VERSION = "8.5.6";
 
-const FRESHPRESS_SSG_VERSION = "0.0.1";
-const FRESHPRESS_MARKDOWN_VERSION = "0.0.1";
-
 function css(strs: TemplateStringsArray, ...exprs: string[]): string {
   let out = "";
 
@@ -404,8 +401,8 @@ if (Deno.args.includes("build")) {
       fresh: `jsr:@fresh/core@^${FRESH_VERSION}`,
       preact: `npm:preact@^${PREACT_VERSION}`,
       "@preact/signals": `npm:@preact/signals@^${PREACT_SIGNALS_VERSION}`,
-      "@freshpress/plugin-ssg": `jsr:@freshpress/plugin-ssg@^${FRESHPRESS_SSG_VERSION}`,
-      "@freshpress/plugin-markdown": `jsr:@freshpress/plugin-markdown@^${FRESHPRESS_MARKDOWN_VERSION}`,
+      "@freshpress/plugin-ssg": `jsr:@freshpress/plugin-ssg@latest`,
+      "@freshpress/plugin-markdown": `jsr:@freshpress/plugin-markdown@latest`,
       "@deno/gfm": "jsr:@deno/gfm@0.11.0",
       "@std/front-matter": "jsr:@std/front-matter@0.2.0",
       "@std/path": "jsr:@std/path@1",
