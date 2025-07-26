@@ -1,33 +1,21 @@
-import type { Plugin } from "$fresh/server.ts";
+import type { Builder } from "fresh/dev";
 import * as path from "@std/path";
 import { copy } from "@std/fs/copy";
 import { emptyDir } from "@std/fs/empty-dir";
 
 export interface SSGPluginOptions {
-  dynamicRoutes?: () => Promise<string[]> | string[];
   outputDir?: string;
   baseUrl?: string;
 }
 
-export function ssgPlugin(options: SSGPluginOptions = {}): Plugin {
-  return {
-    name: "freshpress-ssg",
-    async build(snapshot) {
-      if (options.dynamicRoutes) {
-        console.log("[ssg] Discovering dynamic routes...");
-        const dynamicPaths = await options.dynamicRoutes();
-        for (const route of dynamicPaths) {
-          snapshot.addPrerendered(new URL(route, "http://localhost"));
-        }
-        console.log(
-          `[ssg] Added ${dynamicPaths.length} dynamic routes for prerendering.`
-        );
-      }
-    },
-    async finish(snapshot) {
-      await generateStaticSite(snapshot.paths, options);
-    },
-  };
+export function ssgPlugin(
+  builder: Builder,
+  options: SSGPluginOptions = {}
+): void {
+  // The onBeforeBuild hook is no longer needed here, as markdownPlugin now handles adding routes.
+  builder.onAfterBuild(async (snapshot) => {
+    await generateStaticSite(snapshot.prerendered, options);
+  });
 }
 
 export async function generateStaticSite(

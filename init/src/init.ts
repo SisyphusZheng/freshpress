@@ -456,7 +456,7 @@ export default function PostsLayout({ Component }: PageProps) {
 
   const SLUG_TSX = `import { Handlers, PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
-import { loadPost, Post, getMarkdownPaths } from "@freshpress/plugin-markdown";
+import { loadPost, Post } from "@freshpress/plugin-markdown";
 
 export const handler: Handlers<Post> = {
   async GET(_req, ctx) {
@@ -480,11 +480,6 @@ export default function PostPage({ data }: PageProps<Post>) {
       />
     </>
   );
-}
-
-export async function prerender() {
-  const paths = await getMarkdownPaths();
-  return paths;
 }`;
   await writeFile("routes/posts/[slug].tsx", SLUG_TSX);
 
@@ -493,28 +488,26 @@ import { defineConfig } from "$fresh/server.ts";
 import { Builder } from "fresh/dev";
 
 import tailwind from "@fresh/plugin-tailwind";
+import { markdownPlugin } from "@freshpress/plugin-markdown";
 import { ssgPlugin } from "@freshpress/plugin-ssg";
-import { getMarkdownPaths } from "@freshpress/plugin-markdown";
 
-// Define the configuration programmatically
-const config = defineConfig({
-  plugins: [
-    tailwind(),
-    ssgPlugin({
-      // Automatically provide dynamic routes from markdown files
-      dynamicRoutes: () => getMarkdownPaths({ contentDir: "./posts" }),
-    }),
-    // We don't need to register the markdown plugin itself anymore,
-    // as we are now using its helper functions directly in our routes.
-  ],
-});
+const builder = new Builder();
 
-const builder = new Builder(config);
+// Configure Tailwind CSS
+tailwind(builder);
+
+// Configure FreshPress Markdown to discover and add post routes
+markdownPlugin(builder, { contentDir: "./posts" });
+
+// Configure FreshPress SSG to copy files after build
+ssgPlugin(builder);
+
+const config = defineConfig({});
 
 if (Deno.args.includes("build")) {
-  await builder.build();
+  await builder.build(config);
 } else {
-  await builder.listen();
+  await builder.listen(config);
 }`;
   await writeFile("dev.ts", DEV_TS);
 

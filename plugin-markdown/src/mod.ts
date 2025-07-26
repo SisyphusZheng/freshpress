@@ -1,3 +1,4 @@
+import type { Builder } from "fresh/dev";
 import { extract } from "@std/front-matter/yaml";
 import { render } from "gfm";
 import * as path from "@std/path";
@@ -16,26 +17,30 @@ export interface MarkdownOptions {
 }
 
 /**
- * Scans the content directory for markdown files and returns an array of dynamic route paths.
- * This is used by the ssgPlugin to discover which routes to pre-render.
+ * A Fresh plugin that discovers markdown files and adds them as prerenderable routes.
  */
-export async function getMarkdownPaths(
+export function markdownPlugin(
+  builder: Builder,
   options: MarkdownOptions = {}
-): Promise<string[]> {
-  const { contentDir = "./posts" } = options;
-  const postsDir = path.resolve(Deno.cwd(), contentDir);
-  const routeBasePath = options.routeBasePath ?? path.basename(postsDir);
+): void {
+  builder.onBeforeBuild(async () => {
+    const { contentDir = "./posts" } = options;
+    const postsDir = path.resolve(Deno.cwd(), contentDir);
+    const routeBasePath = options.routeBasePath ?? path.basename(postsDir);
+    const globPattern = path.join(postsDir, "**/*.md");
 
-  const paths: string[] = [];
-  const globPattern = path.join(postsDir, "**/*.md");
-
-  for await (const file of expandGlob(globPattern)) {
-    if (file.isFile) {
-      const slug = path.relative(postsDir, file.path).replace(/\.md$/, "");
-      paths.push(`/${routeBasePath}/${slug}`);
+    console.log("[markdown] Discovering posts...");
+    let count = 0;
+    for await (const file of expandGlob(globPattern)) {
+      if (file.isFile) {
+        const slug = path.relative(postsDir, file.path).replace(/\.md$/, "");
+        const route = `/${routeBasePath}/${slug}`;
+        builder.addPrerenderedRoute(route);
+        count++;
+      }
     }
-  }
-  return paths;
+    console.log(`[markdown] Added ${count} post routes for prerendering.`);
+  });
 }
 
 /**
