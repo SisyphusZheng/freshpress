@@ -28,6 +28,11 @@ This is a monorepo project containing the following core packages:
 - [`@freshpress/plugin-ssg`](./plugin-ssg) - A plugin for Static Site Generation (SSG).
 - [`@freshpress/plugin-markdown`](./plugin-md) - A plugin to render Markdown content as pages.
 
+They all published in JSR:
+- [`@freshpress/init`](https://jsr.io/@freshpress/init) 
+- [`@freshpress/plugin-ssg`](https://jsr.io/@freshpress/plugin-ssg) 
+- [`@freshpress/plugin-markdown`](https://jsr.io/@freshpress/plugin-markdown) 
+- 
 ## 🏁 Quick Start
 
 ```bash
