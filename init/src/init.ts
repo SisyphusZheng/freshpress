@@ -359,7 +359,6 @@ export default function PostPage({ data }: PageProps<Post>) {
 
   // 修复 DEV_TS 导入路径
   const DEV_TS = `#!/usr/bin/env -S deno run -A --watch=static/,routes/,posts/
-import { defineConfig } from "fresh";
 import { Builder } from "fresh/dev";
 
 import tailwind from "@fresh/plugin-tailwind";
