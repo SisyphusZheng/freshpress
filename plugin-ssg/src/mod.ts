@@ -1,7 +1,7 @@
-import type { Builder } from "fresh/dev";
+import type { Plugin } from "$fresh/server.ts";
 import * as path from "@std/path";
-import { copy } from "@std/fs";
-import { emptyDir } from "@std/fs";
+import { copy } from "@std/fs/copy";
+import { emptyDir } from "@std/fs/empty-dir";
 
 export interface SSGPluginOptions {
   dynamicRoutes?: () => Promise<string[]> | string[];
@@ -9,40 +9,31 @@ export interface SSGPluginOptions {
   baseUrl?: string;
 }
 
-export function ssgPlugin(
-  builder: Builder,
-  options: SSGPluginOptions = {}
-): void {
-  const { outputDir = "_fresh/site" } = options;
-
-  builder.onBeforeBuild(async () => {
-    if (options.dynamicRoutes) {
-      console.log("[ssg] Discovering dynamic routes...");
-      const dynamicPaths = await options.dynamicRoutes();
-      for (const path of dynamicPaths) {
-        builder.addPrerenderedRoute(path);
+export function ssgPlugin(options: SSGPluginOptions = {}): Plugin {
+  return {
+    name: "freshpress-ssg",
+    async build(snapshot) {
+      if (options.dynamicRoutes) {
+        console.log("[ssg] Discovering dynamic routes...");
+        const dynamicPaths = await options.dynamicRoutes();
+        for (const route of dynamicPaths) {
+          snapshot.addPrerendered(new URL(route, "http://localhost"));
+        }
+        console.log(
+          `[ssg] Added ${dynamicPaths.length} dynamic routes for prerendering.`
+        );
       }
-      console.log(
-        `[ssg] Added ${dynamicPaths.length} dynamic routes for prerendering.`
-      );
-    }
-  });
-
-  builder.onTransformStaticFile(
-    {
-      pluginName: "freshpress-ssg",
-      filter: /\.html$/,
     },
-    async (args) => {
-      console.log(`[ssg] Processing ${args.path}`);
-      return { content: args.text };
-    }
-  );
-
-  console.log(`[ssg] Plugin initialized, output dir: ${outputDir}`);
+    async finish(snapshot) {
+      await generateStaticSite(snapshot.paths, options);
+    },
+  };
 }
 
-export async function generateStaticSite(options: SSGPluginOptions = {}) {
+export async function generateStaticSite(
+  prerenderedRoutes: Set<string>,
+  options: SSGPluginOptions = {}
+) {
   const { outputDir = "_site" } = options;
   const outputDirPath = path.resolve(Deno.cwd(), outputDir);
 
@@ -57,9 +48,11 @@ export async function generateStaticSite(options: SSGPluginOptions = {}) {
     console.log("📂 Copied prerendered HTML files.");
   } catch (err) {
     if (err instanceof Deno.errors.NotFound) {
-      console.warn(
-        "Warning: '_fresh/prerendered' directory not found. No pages were prerendered."
-      );
+      if (prerenderedRoutes.size > 0) {
+        console.warn(
+          "Warning: '_fresh/prerendered' directory not found, but routes were expected."
+        );
+      }
     } else {
       console.error(
         `Error: Could not copy prerendered files:`,

@@ -1,4 +1,4 @@
-import { Extract } from "@std/front-matter";
+import { extract } from "@std/front-matter/yaml";
 import { render } from "gfm";
 import * as path from "@std/path";
 import { expandGlob } from "@std/fs/expand-glob";
@@ -52,7 +52,7 @@ export async function loadPost(
 
   try {
     const fileContent = await Deno.readTextFile(filePath);
-    const { attrs, body } = Extract(fileContent);
+    const { attrs, body } = extract(fileContent);
     const content = render(body);
 
     return {
