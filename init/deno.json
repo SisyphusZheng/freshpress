@@ -17,6 +17,7 @@
   "imports": {
     "@std/fmt/colors": "jsr:@std/fmt@^1.0.8/colors",
     "@std/path": "jsr:@std/path@1",
-    "@std/cli/parse-args": "jsr:@std/cli@^1.0.21/parse-args"
+    "@std/cli/parse-args": "jsr:@std/cli@^1.0.21/parse-args",
+    "@deno/gfm": "jsr:@deno/gfm@0.11.0"
   }
 }
