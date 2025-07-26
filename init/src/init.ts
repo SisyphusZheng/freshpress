@@ -1,6 +1,7 @@
 // deno-lint-ignore-file no-console
 import * as colors from "@std/fmt/colors";
 import * as path from "@std/path";
+import { CSS as GFM_CSS, render } from "@deno/gfm";
 
 // Keep these as is, as we replace these version in our release script
 const FRESH_VERSION = "2.0.0-alpha.45";
@@ -317,6 +318,7 @@ CMD ["serve", "-A", "_fresh/server.js"]
 
   const cssStyles = useTailwind ? TAILWIND_CSS : NO_TAILWIND_STYLES;
   await writeFile("static/styles.css", cssStyles);
+
   // deno-fmt-ignore
   const STATIC_LOGO = `<svg width="40" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path
@@ -338,7 +340,7 @@ CMD ["serve", "-A", "_fresh/server.js"]
   />
 </svg>`;
   await writeFile("static/logo.svg", STATIC_LOGO);
-
+  await writeFile("static/gfm.css", GFM_CSS);
   try {
     const res = await fetch("https://fresh.deno.dev/favicon.ico");
     const buf = await res.arrayBuffer();
@@ -383,7 +385,7 @@ export default define.page(function Home() {
         <p class="my-4">
           Your new documentation site is ready.
         </p>
-        <a href="/getting-started" class="text-blue-600 hover:underline">
+        <a href="/posts/getting-started" class="text-blue-600 hover:underline">
           Get started
         </a>
       </div>
@@ -411,7 +413,7 @@ export default function App({ Component }: PageProps) {
 }`;
   await writeFile("routes/_app.tsx", APP_WRAPPER);
 
-  const API_NAME = `import { define } from "../../utils.ts";
+  const API_NAME = `import { define } from "../utils.ts";
 
 export const handler = define.handlers({
   GET(ctx) {
@@ -423,7 +425,11 @@ export const handler = define.handlers({
 });`;
   await writeFile("routes/api/[name].tsx", API_NAME);
 
-  const GETTING_STARTED_MD = `# Getting Started
+  const GETTING_STARTED_MD = `---
+title: Getting Started
+---
+
+# Getting Started
 
 Welcome to your new FreshPress documentation site!
 
@@ -431,20 +437,75 @@ This page is located at \`posts/getting-started.md\`.
 `;
   await writeFile("posts/getting-started.md", GETTING_STARTED_MD);
 
+  const POSTS_LAYOUT = `import { PageProps } from "$fresh/server.ts";
+import { Head } from "$fresh/runtime.ts";
+
+export default function PostsLayout({ Component }: PageProps) {
+  return (
+    <>
+      <Head>
+        <link rel="stylesheet" href="/gfm.css" />
+      </Head>
+      <main class="max-w-screen-md mx-auto px-4 py-8">
+        <Component />
+      </main>
+    </>
+  );
+}`;
+  await writeFile("routes/posts/_layout.tsx", POSTS_LAYOUT);
+
+  const SLUG_TSX = `import { Handlers, PageProps } from "$fresh/server.ts";
+import { Head } from "$fresh/runtime.ts";
+import { loadPost, Post, getMarkdownPaths } from "@freshpress/plugin-markdown";
+
+export const handler: Handlers<Post> = {
+  async GET(_req, ctx) {
+    const post = await loadPost(ctx.params.slug);
+    if (!post) {
+      return ctx.renderNotFound();
+    }
+    return ctx.render(post);
+  },
+};
+
+export default function PostPage({ data }: PageProps<Post>) {
+  return (
+    <>
+      <Head>
+        <title>{data.title}</title>
+      </Head>
+      <article
+        class="markdown-body"
+        dangerouslySetInnerHTML={{ __html: data.content }}
+      />
+    </>
+  );
+}
+
+export async function prerender() {
+  const paths = await getMarkdownPaths();
+  return paths;
+}`;
+  await writeFile("routes/posts/[slug].tsx", SLUG_TSX);
+
   const DEV_TS = `#!/usr/bin/env -S deno run -A --watch=static/,routes/,posts/
 import { defineConfig } from "$fresh/server.ts";
 import { Builder } from "fresh/dev";
 
 import tailwind from "@fresh/plugin-tailwind";
 import { ssgPlugin } from "@freshpress/plugin-ssg";
-import { markdownPlugin } from "@freshpress/plugin-markdown";
+import { getMarkdownPaths } from "@freshpress/plugin-markdown";
 
 // Define the configuration programmatically
 const config = defineConfig({
   plugins: [
     tailwind(),
-    ssgPlugin(),
-    markdownPlugin({ contentDir: "./posts" }),
+    ssgPlugin({
+      // Automatically provide dynamic routes from markdown files
+      dynamicRoutes: () => getMarkdownPaths({ contentDir: "./posts" }),
+    }),
+    // We don't need to register the markdown plugin itself anymore,
+    // as we are now using its helper functions directly in our routes.
   ],
 });
 
@@ -478,9 +539,10 @@ if (Deno.args.includes("build")) {
       "@preact/signals": `npm:@preact/signals@^${PREACT_SIGNALS_VERSION}`,
       "@freshpress/plugin-ssg": `jsr:@freshpress/plugin-ssg@^${FRESHPRESS_SSG_VERSION}`,
       "@freshpress/plugin-markdown": `jsr:@freshpress/plugin-markdown@^${FRESHPRESS_MARKDOWN_VERSION}`,
-      gfm: "https://deno.land/x/gfm@0.6.0/mod.ts",
+      "@deno/gfm": "jsr:@deno/gfm@0.11.0",
+      "@std/front-matter": "jsr:@std/front-matter@0.2.0",
       "@std/path": "jsr:@std/path@1",
-      "@std/fs/glob": "jsr:@std/fs@^1.0.0-rc.8/glob",
+      "@std/fs/expand-glob": "jsr:@std/fs@^1.0.0-rc.8/expand-glob",
     } as Record<string, string>,
     compilerOptions: {
       lib: ["dom", "dom.asynciterable", "dom.iterable", "deno.ns"],
@@ -520,7 +582,11 @@ deno task dev
 
 This will watch the project directory and restart as necessary.
 
-Your documentation content is located in the \`posts/\` directory.
+Your documentation content is located in the \`posts/\` directory. An example article is available at \`posts/getting-started.md\`. You can view it at http://localhost:8000/posts/getting-started.
+
+To create a new article, add a new .md file in the \`posts/\` directory with optional frontmatter (e.g., title). The filename will be used as the slug.
+
+Run \`deno task build\` to generate static files.
 `;
   await writeFile("README.md", README_MD);
 
