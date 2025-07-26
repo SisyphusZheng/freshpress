@@ -1,25 +1,17 @@
 {
-  "nodeModulesDir": "auto",
-  "workspace": ["./init", "./plugin-markdown", "./plugin-ssg", "./example"],
-  "name": "@freshpress/freshpress",
-  "version": "0.0.1",
-  "license": "MIT",
-  "compilerOptions": {
-    "lib": ["dom", "dom.asynciterable", "deno.ns", "deno.unstable"],
-    "jsx": "precompile",
-    "jsxImportSource": "preact",
-    "jsxPrecompileSkipElements": ["a", "img", "source", "body", "html", "head"]
+  "tasks": {
+    "check": "deno fmt --check . && deno lint . && deno check",
+    "dev": "deno run -A --watch=static/,routes/,posts/ dev.ts",
+    "build": "deno run -A dev.ts build",
+    "start": "deno serve -A _fresh/server.js",
+    "update": "deno run -A -r jsr:@fresh/update ."
   },
   "lint": {
     "rules": {
-      "tags": ["recommended", "fresh", "jsr", "jsx", "react"],
-      "exclude": ["no-window"],
-      "include": ["no-console"]
+      "tags": ["fresh", "recommended"]
     }
   },
-  "fmt": {
-    "exclude": ["./www/static/**/*.svg"]
-  },
+  "exclude": ["**/_fresh/*"],
   "imports": {
     "fresh": "jsr:@fresh/core@^2.0.0-alpha.45",
     "preact": "npm:preact@^10.26.9",
@@ -36,5 +28,11 @@
     "postcss": "npm:postcss@^8.5.6",
     "daisyui": "npm:daisyui@^5.0.47",
     "preact/jsx-runtime": "npm:preact/jsx-runtime@10.26.9"
+  },
+  "compilerOptions": {
+    "lib": ["dom", "dom.asynciterable", "dom.iterable", "deno.ns"],
+    "jsx": "precompile",
+    "jsxImportSource": "preact",
+    "jsxPrecompileSkipElements": ["a", "img", "source", "body", "html", "head"]
   }
 }
