@@ -31,21 +31,19 @@ the features and plugins planned for future releases:
 
 ## 📦 Package Structure
 
-This is a monorepo project containing the following core packages:
+This is a monorepo project containing the following core packages,They all
+published in JSR:
 
-- [`@freshpress/init`](./init) - A command-line tool to scaffold a new
-  FreshPress project.
-- [`@freshpress/plugin-ssg`](./plugin-ssg) - A plugin for Static Site Generation
-  (SSG).
-- [`@freshpress/plugin-markdown`](./plugin-md) - A plugin to render Markdown
-  content as pages.
-
-They all published in JSR:
-
-- [`@freshpress/init`](https://jsr.io/@freshpress/init)
-- [`@freshpress/plugin-ssg`](https://jsr.io/@freshpress/plugin-ssg)
-- [`@freshpress/plugin-markdown`](https://jsr.io/@freshpress/plugin-markdown)
--
+- [`@freshpress/init`](https://jsr.io/@freshpress/init) - A command-line tool to
+  scaffold a new FreshPress project.
+- [`@freshpress/plugin-ssg`](https://jsr.io/@freshpress/plugin-ssg) - A plugin
+  for Static Site Generation (SSG).
+- [`@freshpress/plugin-markdown`](https://jsr.io/@freshpress/plugin-markdown) -
+  A plugin to render Markdown content as pages.
+- [`@freshpress/plugin-feed`](https://jsr.io/@freshpress/plugin-feed) - A plugin
+  to generate RSS feeds.
+- [`@freshpress/plugin-sitemap`](https://jsr.io/@freshpress/plugin-sitemap) - A
+  plugin to generate `sitemap.xml` files.
 
 ## 🏁 Quick Start
 
