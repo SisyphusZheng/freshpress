@@ -37,7 +37,7 @@ function error(message: string): never {
 export const HELP_TEXT = `@freshpress/init
 
 Initialize a new FreshPress project. This will create all the necessary files for a
-new documentation site.
+new documentation site with Tailwind CSS and daisyUI.
 
 To generate a project in the './my-docs' subdirectory:
   deno run -Ar jsr:@freshpress/init ./my-docs
@@ -54,10 +54,6 @@ OPTIONS:
 
 export const CONFIRM_EMPTY_MESSAGE =
   "The target directory is not empty (files could get overwritten). Do you want to continue anyway?";
-export const CONFIRM_TAILWIND_MESSAGE = `Set up ${colors.cyan(
-  "Tailwind CSS"
-)} for styling?`;
-export const CONFIRM_VSCODE_MESSAGE = `Do you use ${colors.cyan("VS Code")}?`;
 
 export async function initProject(
   cwd = Deno.cwd(),
@@ -72,7 +68,7 @@ export async function initProject(
   console.log();
   console.log(
     colors.bgRgb8(
-      colors.rgb8(" 📚 FreshPress: The SSG framework based on deno fresh. ", 0),
+      colors.rgb8(" 📚 FreshPress: The SSG framework with Tailwind CSS & daisyUI ", 0),
       121
     )
   );
@@ -107,15 +103,8 @@ export async function initProject(
   }
 
   const useDocker = flags.docker;
-  let useTailwind = flags.tailwind || false;
-  if (flags.tailwind == null) {
-    if (confirm(CONFIRM_TAILWIND_MESSAGE)) {
-      useTailwind = true;
-    }
-  }
-
-  const useVSCode =
-    flags.vscode == null ? confirm(CONFIRM_VSCODE_MESSAGE) : flags.vscode;
+  const useTailwind = true;
+  const useVSCode = true;
 
   const writeFile = async (
     pathname: string,
@@ -175,149 +164,14 @@ CMD ["serve", "-A", "_fresh/server.js"]
       );
     }
   `;
-  // deno-fmt-ignore
-  const NO_TAILWIND_STYLES = css`
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-    }
-    * {
-      margin: 0;
-    }
-    button {
-      color: inherit;
-    }
-    button,
-    [role="button"] {
-      cursor: pointer;
-    }
-    code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-        "Liberation Mono", "Courier New", monospace;
-      font-size: 1em;
-    }
-    img,
-    svg {
-      display: block;
-    }
-    img,
-    video {
-      max-width: 100%;
-      height: auto;
-    }
 
-    html {
-      line-height: 1.5;
-      -webkit-text-size-adjust: 100%;
-      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-        "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-        "Noto Color Emoji";
-    }
-    .transition-colors {
-      transition-property: background-color, border-color, color, fill, stroke;
-      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-      transition-duration: 150ms;
-    }
-    .my-6 {
-      margin-bottom: 1.5rem;
-      margin-top: 1.5rem;
-    }
-    .text-4xl {
-      font-size: 2.25rem;
-      line-height: 2.5rem;
-    }
-    .mx-2 {
-      margin-left: 0.5rem;
-      margin-right: 0.5rem;
-    }
-    .my-4 {
-      margin-bottom: 1rem;
-      margin-top: 1rem;
-    }
-    .mx-auto {
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .px-4 {
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
-    .py-8 {
-      padding-bottom: 2rem;
-      padding-top: 2rem;
-    }
-    .bg-\\[\\#86efac\\] {
-      background-color: #86efac;
-    }
-    .text-3xl {
-      font-size: 1.875rem;
-      line-height: 2.25rem;
-    }
-    .py-6 {
-      padding-bottom: 1.5rem;
-      padding-top: 1.5rem;
-    }
-    .px-2 {
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
-    }
-    .py-1 {
-      padding-bottom: 0.25rem;
-      padding-top: 0.25rem;
-    }
-    .border-gray-500 {
-      border-color: #6b7280;
-    }
-    .bg-white {
-      background-color: #fff;
-    }
-    .flex {
-      display: flex;
-    }
-    .gap-8 {
-      grid-gap: 2rem;
-      gap: 2rem;
-    }
-    .font-bold {
-      font-weight: 700;
-    }
-    .max-w-screen-md {
-      max-width: 768px;
-    }
-    .flex-col {
-      flex-direction: column;
-    }
-    .items-center {
-      align-items: center;
-    }
-    .justify-center {
-      justify-content: center;
-    }
-    .border-2 {
-      border-width: 2px;
-    }
-    .rounded-sm {
-      border-radius: 0.25rem;
-    }
-    .hover\\:bg-gray-200:hover {
-      background-color: #e5e7eb;
-    }
-    .tabular-nums {
-      font-variant-numeric: tabular-nums;
-    }
-
-    ${GRADIENT_CSS}
-  `;
-  // deno-fmt-ignore
   const TAILWIND_CSS = css`
     @import "tailwindcss";
+    @plugin "daisyui";
     ${GRADIENT_CSS}
   `;
 
-  const cssStyles = useTailwind ? TAILWIND_CSS : NO_TAILWIND_STYLES;
-  await writeFile("static/styles.css", cssStyles);
+  await writeFile("static/styles.css", TAILWIND_CSS);
 
   // deno-fmt-ignore
   const STATIC_LOGO = `<svg width="40" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -372,38 +226,42 @@ export const define = createDefine<State>();`;
 
 export default define.page(function Home() {
   return (
-    <div class="px-4 py-8 mx-auto">
-      <div class="max-w-screen-md mx-auto flex flex-col items-center justify-center">
-        <img
-          class="my-6"
-          src="/logo.svg"
-          width="128"
-          height="128"
-          alt="the FreshPress logo"
-        />
-        <h1 class="text-4xl font-bold">Welcome to FreshPress</h1>
-        <p class="my-4">
-          Your new documentation site is ready.
-        </p>
-        <a href="/posts/getting-started" class="text-blue-600 hover:underline">
-          Get started
-        </a>
+    <div class="min-h-screen bg-base-100">
+      <div class="container mx-auto px-4 py-8">
+        <div class="max-w-screen-md mx-auto flex flex-col items-center justify-center">
+          <img
+            class="my-6"
+            src="/logo.svg"
+            width="128"
+            height="128"
+            alt="the FreshPress logo"
+          />
+          <h1 class="text-4xl font-bold text-primary mb-4">Welcome to FreshPress</h1>
+          <p class="text-lg text-base-content/70 mb-8 text-center">
+            Your new documentation site with Tailwind CSS and daisyUI is ready.
+          </p>
+          <a href="/posts/getting-started" class="btn btn-primary">
+            Get started
+          </a>
+        </div>
       </div>
     </div>
   );
 });`;
   await writeFile("routes/index.tsx", ROUTES_HOME);
 
+  // 修改 APP_WRAPPER，添加 gfm.css 并使用 daisyUI 主题
   const APP_WRAPPER = `import type { PageProps } from "fresh";
 
 export default function App({ Component }: PageProps) {
   return (
-    <html>
+    <html data-theme="light">
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>${path.basename(projectDir)}</title>
         <link rel="stylesheet" href="/styles.css" />
+        <link rel="stylesheet" href="/gfm.css" />
       </head>
       <body>
         <Component />
@@ -427,35 +285,44 @@ export const handler = define.handlers({
 
   const GETTING_STARTED_MD = `---
 title: Getting Started
+desc: Welcome to your new FreshPress documentation site
 ---
 
 # Getting Started
 
-Welcome to your new FreshPress documentation site!
+Welcome to your new FreshPress documentation site with **Tailwind CSS** and **daisyUI**!
 
 This page is located at \`posts/getting-started.md\`.
+
+## What's Included
+
+- ✅ **Fresh** - Modern web framework for Deno
+- ✅ **Tailwind CSS** - Utility-first CSS framework
+- ✅ **daisyUI** - Semantic component classes for Tailwind CSS
+- ✅ **Markdown Support** - Write content in Markdown
+- ✅ **Static Site Generation** - Deploy anywhere
+
+## Quick Start
+
+1. Create new Markdown files in the \`posts/\` directory
+2. Run \`deno task dev\` for development
+3. Run \`deno task build\` to generate static files
+
+## daisyUI Components
+
+You can now use daisyUI components in your pages:
+
+- Buttons: \`btn btn-primary\`
+- Cards: \`card bg-base-100 shadow-xl\`
+- Alerts: \`alert alert-success\`
+
+Happy building! 🦕
 `;
   await writeFile("posts/getting-started.md", GETTING_STARTED_MD);
 
-  const POSTS_LAYOUT = `import { PageProps } from "$fresh/server.ts";
-import { Head } from "$fresh/runtime.ts";
-
-export default function PostsLayout({ Component }: PageProps) {
-  return (
-    <>
-      <Head>
-        <link rel="stylesheet" href="/gfm.css" />
-      </Head>
-      <main class="max-w-screen-md mx-auto px-4 py-8">
-        <Component />
-      </main>
-    </>
-  );
-}`;
-  await writeFile("routes/posts/_layout.tsx", POSTS_LAYOUT);
-
-  const SLUG_TSX = `import { Handlers, PageProps } from "$fresh/server.ts";
-import { Head } from "$fresh/runtime.ts";
+  // 修复导入路径，删除 POSTS_LAYOUT
+  const SLUG_TSX = `import { Handlers, PageProps } from "fresh";
+import { Head } from "fresh/runtime";
 import { loadPost, Post } from "@freshpress/plugin-markdown";
 
 export const handler: Handlers<Post> = {
@@ -474,17 +341,24 @@ export default function PostPage({ data }: PageProps<Post>) {
       <Head>
         <title>{data.title}</title>
       </Head>
-      <article
-        class="markdown-body"
-        dangerouslySetInnerHTML={{ __html: data.content }}
-      />
+      <div class="min-h-screen bg-base-100">
+        <div class="container mx-auto px-4 py-8">
+          <div class="max-w-screen-md mx-auto">
+            <article
+              class="prose prose-lg max-w-none"
+              dangerouslySetInnerHTML={{ __html: data.content }}
+            />
+          </div>
+        </div>
+      </div>
     </>
   );
 }`;
   await writeFile("routes/posts/[slug].tsx", SLUG_TSX);
 
+  // 修复 DEV_TS 导入路径
   const DEV_TS = `#!/usr/bin/env -S deno run -A --watch=static/,routes/,posts/
-import { defineConfig } from "$fresh/server.ts";
+import { defineConfig } from "fresh";
 import { Builder } from "fresh/dev";
 
 import tailwind from "@fresh/plugin-tailwind";
@@ -536,6 +410,11 @@ if (Deno.args.includes("build")) {
       "@std/front-matter": "jsr:@std/front-matter@0.2.0",
       "@std/path": "jsr:@std/path@1",
       "@std/fs/expand-glob": "jsr:@std/fs@^1.0.0-rc.8/expand-glob",
+      "tailwindcss: `npm:tailwindcss@^${TAILWINDCSS_VERSION}`,
+      "@fresh/plugin-tailwind": `jsr:@fresh/plugin-tailwind@^${FRESH_TAILWIND_VERSION}`,
+      "@tailwindcss/postcss": `npm:@tailwindcss/postcss@^${TAILWINDCSS_POSTCSS_VERSION}`,
+      postcss: `npm:postcss@^${POSTCSS_VERSION}`,
+      daisyui: `npm:daisyui@latest`,
     } as Record<string, string>,
     compilerOptions: {
       lib: ["dom", "dom.asynciterable", "dom.iterable", "deno.ns"],
@@ -545,22 +424,19 @@ if (Deno.args.includes("build")) {
     },
   };
 
-  if (useTailwind) {
-    denoJson.imports["tailwindcss"] = `npm:tailwindcss@^${TAILWINDCSS_VERSION}`;
-    denoJson.imports[
-      "@fresh/plugin-tailwind"
-    ] = `jsr:@fresh/plugin-tailwind@^${FRESH_TAILWIND_VERSION}`;
-    denoJson.imports[
-      "@tailwindcss/postcss"
-    ] = `npm:@tailwindcss/postcss@^${TAILWINDCSS_POSTCSS_VERSION}`;
-    denoJson.imports["postcss"] = `npm:postcss@^${POSTCSS_VERSION}`;
-  }
-
   await writeFile("deno.json", denoJson);
 
   const README_MD = `# FreshPress Project
 
-Welcome to your new FreshPress documentation site!
+Welcome to your new FreshPress documentation site with **Tailwind CSS** and **daisyUI**!
+
+## Features
+
+- 🦕 **Fresh** - Modern web framework for Deno
+- 🎨 **Tailwind CSS** - Utility-first CSS framework  
+- 🧩 **daisyUI** - Semantic component library
+- 📝 **Markdown Support** - Write content in Markdown
+- 🚀 **Static Site Generation** - Deploy anywhere
 
 ### Usage
 
@@ -569,7 +445,7 @@ https://docs.deno.com/runtime/getting_started/installation
 
 Then start the project in development mode:
 
-\`\`\`
+\`\`\`bash
 deno task dev
 \`\`\`
 
@@ -579,105 +455,92 @@ Your documentation content is located in the \`posts/\` directory. An example ar
 
 To create a new article, add a new .md file in the \`posts/\` directory with optional frontmatter (e.g., title). The filename will be used as the slug.
 
-Run \`deno task build\` to generate static files.
+### Building
+
+Run \`deno task build\` to generate static files for deployment.
+
+### daisyUI Components
+
+You can use daisyUI components throughout your site:
+
+- Buttons: \`btn btn-primary\`, \`btn btn-secondary\`
+- Cards: \`card bg-base-100 shadow-xl\`
+- Alerts: \`alert alert-success\`
+- Navigation: \`navbar\`, \`menu\`
+
+For more components, visit: https://daisyui.com/
 `;
   await writeFile("README.md", README_MD);
 
-  if (useVSCode) {
-    const vscodeSettings = {
-      "deno.enable": true,
-      "deno.lint": true,
+  // VSCode 配置（强制启用）
+  const vscodeSettings = {
+    "deno.enable": true,
+    "deno.lint": true,
+    "editor.defaultFormatter": "denoland.vscode-deno",
+    "[typescriptreact]": {
       "editor.defaultFormatter": "denoland.vscode-deno",
-      "[typescriptreact]": {
-        "editor.defaultFormatter": "denoland.vscode-deno",
-      },
-      "[typescript]": {
-        "editor.defaultFormatter": "denoland.vscode-deno",
-      },
-      "[javascriptreact]": {
-        "editor.defaultFormatter": "denoland.vscode-deno",
-      },
-      "[javascript]": {
-        "editor.defaultFormatter": "denoland.vscode-deno",
-      },
-      "css.customData": useTailwind ? [".vscode/tailwind.json"] : undefined,
-    };
+    },
+    "[typescript]": {
+      "editor.defaultFormatter": "denoland.vscode-deno",
+    },
+    "[javascriptreact]": {
+      "editor.defaultFormatter": "denoland.vscode-deno",
+    },
+    "[javascript]": {
+      "editor.defaultFormatter": "denoland.vscode-deno",
+    },
+    "css.customData": [".vscode/tailwind.json"],
+  };
 
-    await writeFile(".vscode/settings.json", vscodeSettings);
+  await writeFile(".vscode/settings.json", vscodeSettings);
 
-    const recommendations = ["denoland.vscode-deno"];
-    if (useTailwind) recommendations.push("bradlc.vscode-tailwindcss");
-    await writeFile(".vscode/extensions.json", { recommendations });
+  const recommendations = ["denoland.vscode-deno", "bradlc.vscode-tailwindcss"];
+  await writeFile(".vscode/extensions.json", { recommendations });
 
-    if (useTailwind) {
-      const tailwindCustomData = {
-        version: 1.1,
-        atDirectives: [
+  const tailwindCustomData = {
+    version: 1.1,
+    atDirectives: [
+      {
+        name: "@tailwind",
+        description:
+          "Use the `@tailwind` directive to insert Tailwind's `base`, `components`, `utilities` and `screens` styles into your CSS.",
+        references: [
           {
-            name: "@tailwind",
-            description:
-              "Use the `@tailwind` directive to insert Tailwind's `base`, `components`, `utilities` and `screens` styles into your CSS.",
-            references: [
-              {
-                name: "Tailwind Documentation",
-                url: "https://tailwindcss.com/docs/functions-and-directives#tailwind",
-              },
-            ],
-          },
-          {
-            name: "@apply",
-            description:
-              "Use the `@apply` directive to inline any existing utility classes into your own custom CSS. This is useful when you find a common utility pattern in your HTML that you’d like to extract to a new component.",
-            references: [
-              {
-                name: "Tailwind Documentation",
-                url: "https://tailwindcss.com/docs/functions-and-directives#apply",
-              },
-            ],
-          },
-          {
-            name: "@responsive",
-            description:
-              "You can generate responsive variants of your own classes by wrapping their definitions in the `@responsive` directive:\n```css\n@responsive {\n  .alert {\n    background-color: #E53E3E;\n  }\n}\n```\n",
-            references: [
-              {
-                name: "Tailwind Documentation",
-                url: "https://tailwindcss.com/docs/functions-and-directives#responsive",
-              },
-            ],
-          },
-          {
-            name: "@screen",
-            description:
-              "The `@screen` directive allows you to create media queries that reference your breakpoints by **name** instead of duplicating their values in your own CSS:\n```css\n@screen sm {\n  /* ... */\n}\n```\n…gets transformed into this:\n```css\n@media (min-width: 640px) {\n  /* ... */\n}\n```\n",
-            references: [
-              {
-                name: "Tailwind Documentation",
-                url: "https://tailwindcss.com/docs/functions-and-directives#screen",
-              },
-            ],
-          },
-          {
-            name: "@variants",
-            description:
-              "Generate `hover`, `focus`, `active` and other **variants** of your own utilities by wrapping their definitions in the `@variants` directive:\n```css\n@variants hover, focus {\n   .btn-brand {\n    background-color: #3182CE;\n  }\n}\n```\n",
-            references: [
-              {
-                name: "Tailwind Documentation",
-                url: "https://tailwindcss.com/docs/functions-and-directives#variants",
-              },
-            ],
+            name: "Tailwind Documentation",
+            url: "https://tailwindcss.com/docs/functions-and-directives#tailwind",
           },
         ],
-      };
+      },
+      {
+        name: "@plugin",
+        description:
+          "Use the `@plugin` directive to register plugins with Tailwind CSS.",
+        references: [
+          {
+            name: "Tailwind Documentation",  
+            url: "https://tailwindcss.com/docs/functions-and-directives#plugin",
+          },
+        ],
+      },
+      {
+        name: "@apply",
+        description:
+          "Use the `@apply` directive to inline any existing utility classes into your own custom CSS.",
+        references: [
+          {
+            name: "Tailwind Documentation",
+            url: "https://tailwindcss.com/docs/functions-and-directives#apply",
+          },
+        ],
+      },
+    ],
+  };
 
-      await writeFile(".vscode/tailwind.json", tailwindCustomData);
-    }
-  }
+  await writeFile(".vscode/tailwind.json", tailwindCustomData);
 
   // Specifically print unresolvedDirectory, rather than resolvedDirectory in order to
   // not leak personal info (e.g. `/Users/MyName`)
-  console.log("\n%cProject initialized!\n", "color: green; font-weight: bold");
+  console.log("\n%cProject initialized with Tailwind CSS & daisyUI!\n", "color: green; font-weight: bold");
 
   if (unresolvedDirectory !== ".") {
     console.log(
@@ -695,12 +558,12 @@ Run \`deno task build\` to generate static files.
   );
   console.log();
   console.log(
-    "Stuck? Join our Discord %chttps://discord.gg/deno",
+    "Documentation: %chttps://daisyui.com/%c for component reference.",
     "color: cyan",
     ""
   );
   console.log();
-  console.log("%cHappy hacking! 🦕", "color: gray");
+  console.log("%cHappy hacking with daisyUI! 🦕", "color: gray");
 }
 
 async function writeProjectFile(
