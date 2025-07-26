@@ -9,6 +9,9 @@
     "jsxImportSource": "preact",
     "jsxPrecompileSkipElements": ["a", "img", "source", "body", "html", "head"]
   },
+  "imports": {
+    "fresh": "jsr:@fresh/core@^2.0.0-alpha.46"
+  },
   "tasks": {
     "dev": "deno run --watch -A src/mod.ts",
     "test": "deno test -A"
