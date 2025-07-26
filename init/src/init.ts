@@ -407,7 +407,7 @@ if (Deno.args.includes("build")) {
       "@std/front-matter": "jsr:@std/front-matter@0.2.0",
       "@std/path": "jsr:@std/path@1",
       "@std/fs/expand-glob": "jsr:@std/fs@^1.0.0-rc.8/expand-glob",
-      "tailwindcss: `npm:tailwindcss@^${TAILWINDCSS_VERSION}`,
+      "tailwindcss": `npm:tailwindcss@^${TAILWINDCSS_VERSION}`,
       "@fresh/plugin-tailwind": `jsr:@fresh/plugin-tailwind@^${FRESH_TAILWIND_VERSION}`,
       "@tailwindcss/postcss": `npm:@tailwindcss/postcss@^${TAILWINDCSS_POSTCSS_VERSION}`,
       postcss: `npm:postcss@^${POSTCSS_VERSION}`,
