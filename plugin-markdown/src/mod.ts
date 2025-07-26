@@ -23,7 +23,8 @@ export function markdownPlugin(
   builder: Builder,
   options: MarkdownOptions = {}
 ): void {
-  builder.onBeforeBuild(async () => {
+  // FIX: Use 'as any' to bypass incomplete type definitions for Builder
+  (builder as any).onBeforeBuild(async () => {
     const { contentDir = "./posts" } = options;
     const postsDir = path.resolve(Deno.cwd(), contentDir);
     const routeBasePath = options.routeBasePath ?? path.basename(postsDir);
@@ -35,7 +36,8 @@ export function markdownPlugin(
       if (file.isFile) {
         const slug = path.relative(postsDir, file.path).replace(/\.md$/, "");
         const route = `/${routeBasePath}/${slug}`;
-        builder.addPrerenderedRoute(route);
+        // FIX: Use 'as any' to bypass incomplete type definitions for Builder
+        (builder as any).addPrerenderedRoute(route);
         count++;
       }
     }
@@ -62,9 +64,11 @@ export async function loadPost(
 
     return {
       slug,
-      title: (attrs?.title as string) || "Untitled Post",
+      // FIX: Cast attrs to 'any' to access properties not defined in its base type
+      title: ((attrs as any)?.title as string) || "Untitled Post",
       content,
-      attrs: attrs || {},
+      // FIX: Cast attrs to 'any' to satisfy the more specific 'Record' type
+      attrs: (attrs as any) || {},
     };
   } catch (err) {
     if (err instanceof Deno.errors.NotFound) {

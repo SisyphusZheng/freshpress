@@ -13,9 +13,11 @@ export function ssgPlugin(
   options: SSGPluginOptions = {}
 ): void {
   // The onBeforeBuild hook is no longer needed here, as markdownPlugin now handles adding routes.
-  builder.onAfterBuild(async (snapshot) => {
-    await generateStaticSite(snapshot.prerendered, options);
-  });
+  (builder as any).onAfterBuild(
+    async (snapshot: { prerendered: Set<string> }) => {
+      await generateStaticSite(snapshot.prerendered, options);
+    }
+  );
 }
 
 export async function generateStaticSite(
