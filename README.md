@@ -1,13 +1,11 @@
-Still Can Not use
-
-# FreshPress
+# Still Can Not use
 
 > A Static Site Generator + Hybrid Rendering Documentation Framework for Fresh
 
 FreshPress is a modern documentation framework built entirely on
 [Fresh](https://fresh.deno.dev). Through a plugin-based architecture, it
 provides features like Static Site Generation (SSG), search, and Markdown
-support, all while preserving the advantages of Fresh's island architecture.
+support, preinstalled tailwindcss and daisyui. all while preserving the advantages of Fresh's island architecture.
 
 ## 🚀 Features
 
