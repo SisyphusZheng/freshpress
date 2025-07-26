@@ -20,20 +20,30 @@ export function ssgPlugin(builder: Builder, options: SSGOptions = {}): void {
   const staticDir = path.resolve(Deno.cwd(), options.staticDir || "static");
   const copyAssets = options.copyAssets !== false;
 
-  builder.onTransformStaticFile(async (file) => {
-    // 只在第一次触发时执行SSG
-    if (!ssgExecuted) {
-      ssgExecuted = true;
-      await executeSSG(outputDir, staticDir, copyAssets, builder.config.outDir);
-    }
-    return file; // 不修改文件内容
-  });
+  builder.onTransformStaticFile(
+    {
+      pluginName: "freshpress-ssg",
+      filter: /.*/, // 匹配所有文件
+    },
+    async (file) => {
+      if (!ssgExecuted) {
+        ssgExecuted = true;
+        await executeSSG(
+          outputDir,
+          staticDir,
+          copyAssets,
+          builder.config.outDir,
+        );
+      }
+      return file;
+    },
+  );
 
   async function executeSSG(
     outputDir: string,
     staticDir: string,
     copyAssets: boolean,
-    freshOutDir: string
+    freshOutDir: string,
   ): Promise<void> {
     console.log("🏗️  Starting static site generation...");
 
@@ -44,7 +54,7 @@ export function ssgPlugin(builder: Builder, options: SSGOptions = {}): void {
     } catch (error) {
       console.warn(
         "Warning: Could not clean output directory:",
-        (error as Error).message
+        (error as Error).message,
       );
     }
 
@@ -55,7 +65,7 @@ export function ssgPlugin(builder: Builder, options: SSGOptions = {}): void {
     } catch (err) {
       console.warn(
         "Warning: Could not copy Fresh build output:",
-        (err as Error).message
+        (err as Error).message,
       );
     }
 
@@ -68,16 +78,18 @@ export function ssgPlugin(builder: Builder, options: SSGOptions = {}): void {
         if (!(err instanceof Deno.errors.NotFound)) {
           console.warn(
             "Warning: Could not copy static assets:",
-            (err as Error).message
+            (err as Error).message,
           );
         }
       }
     }
 
     console.log(
-      `✅ Static site generation completed! Output in ${path.basename(
-        outputDir
-      )}`
+      `✅ Static site generation completed! Output in ${
+        path.basename(
+          outputDir,
+        )
+      }`,
     );
   }
 }
