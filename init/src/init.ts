@@ -12,6 +12,10 @@ const TAILWINDCSS_VERSION = "4.1.10";
 const TAILWINDCSS_POSTCSS_VERSION = "4.1.10";
 const POSTCSS_VERSION = "8.5.6";
 
+const PLUGIN_SSG_VERSION = "0.1.2";
+const PLUGIN_MARKDOWN_VERSION = "0.1.2";
+const DAISYUI_VERSION = "5.0.47"
+
 function css(strs: TemplateStringsArray, ...exprs: string[]): string {
   let out = "";
 
@@ -401,8 +405,8 @@ if (Deno.args.includes("build")) {
       fresh: `jsr:@fresh/core@^${FRESH_VERSION}`,
       preact: `npm:preact@^${PREACT_VERSION}`,
       "@preact/signals": `npm:@preact/signals@^${PREACT_SIGNALS_VERSION}`,
-      "@freshpress/plugin-ssg": `jsr:@freshpress/plugin-ssg@latest`,
-      "@freshpress/plugin-markdown": `jsr:@freshpress/plugin-markdown@latest`,
+      "@freshpress/plugin-ssg": `jsr:@freshpress/plugin-ssg@^${PLUGIN_SSG_VERSION}`,
+      "@freshpress/plugin-markdown": `jsr:@freshpress/plugin-markdown@^${PLUGIN_MARKDOWN_VERSION}`,
       "@deno/gfm": "jsr:@deno/gfm@0.11.0",
       "@std/front-matter": "jsr:@std/front-matter@0.2.0",
       "@std/path": "jsr:@std/path@1",
@@ -411,7 +415,7 @@ if (Deno.args.includes("build")) {
       "@fresh/plugin-tailwind": `jsr:@fresh/plugin-tailwind@^${FRESH_TAILWIND_VERSION}`,
       "@tailwindcss/postcss": `npm:@tailwindcss/postcss@^${TAILWINDCSS_POSTCSS_VERSION}`,
       postcss: `npm:postcss@^${POSTCSS_VERSION}`,
-      daisyui: `npm:daisyui@latest`,
+      daisyui: `npm:daisyui@^${DAISYUI_VERSION}`,
     } as Record<string, string>,
     compilerOptions: {
       lib: ["dom", "dom.asynciterable", "dom.iterable", "deno.ns"],
