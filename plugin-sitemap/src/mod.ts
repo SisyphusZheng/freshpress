@@ -56,13 +56,13 @@ export async function generateSitemapXML(
   basename: string,
   distDirectory: string,
   postsDirectory: string,
-  options: SiteMapOptions = {}
+  options: SiteMapOptions = {},
 ): Promise<string> {
   const routesSitemap = await generateSitemap(basename, distDirectory, options);
   const postsSitemap = await generatePostsSitemap(
     basename,
     postsDirectory,
-    options
+    options,
   );
   // Combine both sitemaps
   const combinedSitemap = [...routesSitemap, ...postsSitemap];
@@ -79,7 +79,7 @@ export async function generateSitemapXML(
 
   // Convert Map to array for XML generation
   const uniqueSitemap = Array.from(sitemapMap.entries()).map(
-    ([loc, lastmod]) => ({ loc, lastmod })
+    ([loc, lastmod]) => ({ loc, lastmod }),
   );
 
   return sitemapToXML(uniqueSitemap);
@@ -108,7 +108,7 @@ Sitemap: https://${domain}/sitemap.xml
  * @param config - Configuration object for sitemap and robots.txt generation
  */
 export async function saveSitemapAndRobots(
-  config: SitemapConfig
+  config: SitemapConfig,
 ): Promise<void> {
   const {
     basename,
@@ -124,7 +124,7 @@ export async function saveSitemapAndRobots(
     basename,
     distDirectory,
     postsDirectory,
-    options
+    options,
   );
   const robotsTxt = generateRobotsTxt(domain);
 
@@ -161,7 +161,7 @@ function arrayToObject(arr: string[]): Record<string, number> {
 async function generateSitemap(
   basename: string,
   distDirectory: string,
-  options: SiteMapOptions
+  options: SiteMapOptions,
 ): Promise<Sitemap> {
   const sitemapMap = new Map<string, string>(); // Key: loc, Value: lastmod
 
@@ -233,7 +233,7 @@ async function generateSitemap(
  */
 async function findFolderPathRecursively(
   baseDirectory: string,
-  targetFolderName: string
+  targetFolderName: string,
 ): Promise<string | null> {
   for await (const entry of Deno.readDir(baseDirectory)) {
     const entryPath = `${baseDirectory}/${entry.name}`;
@@ -244,7 +244,7 @@ async function findFolderPathRecursively(
       } else {
         const foundInSubDir = await findFolderPathRecursively(
           entryPath,
-          targetFolderName
+          targetFolderName,
         );
         if (foundInSubDir) return foundInSubDir;
       }
@@ -264,7 +264,7 @@ async function findFolderPathRecursively(
 async function generatePostsSitemap(
   basename: string,
   postsDirectory: string,
-  options: SiteMapOptions
+  options: SiteMapOptions,
 ): Promise<Sitemap> {
   const sitemap: Sitemap = [];
   const languages = options.languages || [];
@@ -284,10 +284,9 @@ async function generatePostsSitemap(
     const slugSegmentsPath = segments.slice(3).join("/");
     const pathname = neededSegmentsPath + "/" + slugSegmentsPath;
 
-    const urlPaths =
-      languages.length > 0
-        ? languages.map((lang) => `/${lang}${pathname}`)
-        : [pathname];
+    const urlPaths = languages.length > 0
+      ? languages.map((lang) => `/${lang}${pathname}`)
+      : [pathname];
 
     for (const urlPath of urlPaths) {
       const { mtime } = await Deno.stat(path);
@@ -339,11 +338,13 @@ async function* stableRecurseFiles(directory: string): AsyncGenerator<string> {
 function sitemapToXML(sitemap: Sitemap): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${sitemap
-  .map(
-    ({ loc, lastmod }) =>
-      `<url><loc>${loc}</loc><lastmod>${lastmod}</lastmod></url>`
-  )
-  .join("\n")}
+${
+    sitemap
+      .map(
+        ({ loc, lastmod }) =>
+          `<url><loc>${loc}</loc><lastmod>${lastmod}</lastmod></url>`,
+      )
+      .join("\n")
+  }
 </urlset>`;
 }

@@ -15,7 +15,7 @@ export interface RssPluginOptions {
 
 // 加载文章数据
 async function loadPosts(
-  dataPath: string = "./data/posts.json"
+  dataPath: string = "./data/posts.json",
 ): Promise<
   {
     title: string;
@@ -66,7 +66,7 @@ async function generateRssXml(options: RssPluginOptions): Promise<string> {
 // 插件函数（参考 Tailwind 风格）
 export function rssFeed(
   builder: Builder,
-  options: RssPluginOptions = {}
+  options: RssPluginOptions = {},
 ): void {
   const transformOptions: OnTransformOptions = {
     pluginName: "rss_feed",

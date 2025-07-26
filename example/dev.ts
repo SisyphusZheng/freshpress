@@ -13,7 +13,7 @@ tailwind(builder);
 // Configure FreshPress Markdown plugin
 markdownPlugin(builder, { contentDir: "./posts" });
 
-// Configure FreshPress SSG plugin  
+// Configure FreshPress SSG plugin
 ssgPlugin(builder, { outputDir: "_site", staticDir: "static" });
 
 if (Deno.args.includes("build")) {

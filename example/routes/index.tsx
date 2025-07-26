@@ -12,7 +12,9 @@ export default define.page(function Home() {
             height="128"
             alt="the FreshPress logo"
           />
-          <h1 class="text-4xl font-bold text-primary mb-4">Welcome to FreshPress</h1>
+          <h1 class="text-4xl font-bold text-primary mb-4">
+            Welcome to FreshPress
+          </h1>
           <p class="text-lg text-base-content/70 mb-8 text-center">
             Your new documentation site with Tailwind CSS and daisyUI is ready.
           </p>

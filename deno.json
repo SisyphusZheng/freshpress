@@ -1,6 +1,13 @@
 {
   "nodeModulesDir": "auto",
-  "workspace": ["./init", "./plugin-markdown", "./plugin-ssg", "./example"],
+  "workspace": [
+    "./init",
+    "./plugin-markdown",
+    "./plugin-ssg",
+    "./example",
+    "./plugin-feed",
+    "./plugin-sitemap"
+  ],
   "name": "@freshpress/freshpress",
   "version": "0.0.1",
   "license": "MIT",
@@ -19,22 +26,5 @@
   },
   "fmt": {
     "exclude": ["./www/static/**/*.svg"]
-  },
-  "imports": {
-    "fresh": "jsr:@fresh/core@^2.0.0-alpha.45",
-    "preact": "npm:preact@^10.26.9",
-    "@preact/signals": "npm:@preact/signals@^2.2.1",
-    "@freshpress/plugin-ssg": "jsr:@freshpress/plugin-ssg@^0.1.2",
-    "@freshpress/plugin-markdown": "jsr:@freshpress/plugin-markdown@^0.1.2",
-    "@deno/gfm": "jsr:@deno/gfm@0.11.0",
-    "@std/front-matter": "jsr:@std/front-matter@0.2.0",
-    "@std/path": "jsr:@std/path@1",
-    "@std/fs/expand-glob": "jsr:@std/fs@^1.0.0-rc.8/expand-glob",
-    "tailwindcss": "npm:tailwindcss@^4.1.10",
-    "@fresh/plugin-tailwind": "jsr:@fresh/plugin-tailwind@^0.0.1-alpha.9",
-    "@tailwindcss/postcss": "npm:@tailwindcss/postcss@^4.1.10",
-    "postcss": "npm:postcss@^8.5.6",
-    "daisyui": "npm:daisyui@^5.0.47",
-    "preact/jsx-runtime": "npm:preact/jsx-runtime@10.26.9"
   }
 }

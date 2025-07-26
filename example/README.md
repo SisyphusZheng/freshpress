@@ -1,11 +1,12 @@
 # FreshPress Project
 
-Welcome to your new FreshPress documentation site with **Tailwind CSS** and **daisyUI**!
+Welcome to your new FreshPress documentation site with **Tailwind CSS** and
+**daisyUI**!
 
 ## Features
 
 - 🦕 **Fresh** - Modern web framework for Deno
-- 🎨 **Tailwind CSS** - Utility-first CSS framework  
+- 🎨 **Tailwind CSS** - Utility-first CSS framework
 - 🧩 **daisyUI** - Semantic component library
 - 📝 **Markdown Support** - Write content in Markdown
 - 🚀 **Static Site Generation** - Deploy anywhere
@@ -23,9 +24,12 @@ deno task dev
 
 This will watch the project directory and restart as necessary.
 
-Your documentation content is located in the `posts/` directory. An example article is available at `posts/getting-started.md`. You can view it at http://localhost:8000/posts/getting-started.
+Your documentation content is located in the `posts/` directory. An example
+article is available at `posts/getting-started.md`. You can view it at
+http://localhost:8000/posts/getting-started.
 
-To create a new article, add a new .md file in the `posts/` directory with optional frontmatter (e.g., title). The filename will be used as the slug.
+To create a new article, add a new .md file in the `posts/` directory with
+optional frontmatter (e.g., title). The filename will be used as the slug.
 
 ### Building
 
@@ -41,4 +45,3 @@ You can use daisyUI components throughout your site:
 - Navigation: `navbar`, `menu`
 
 For more components, visit: https://daisyui.com/
-

@@ -5,7 +5,8 @@ desc: Welcome to your new FreshPress documentation site
 
 # Getting Started
 
-Welcome to your new FreshPress documentation site with **Tailwind CSS** and **daisyUI**!
+Welcome to your new FreshPress documentation site with **Tailwind CSS** and
+**daisyUI**!
 
 This page is located at `posts/getting-started.md`.
 
@@ -32,4 +33,3 @@ You can now use daisyUI components in your pages:
 - Alerts: `alert alert-success`
 
 Happy building! 🦕
-
