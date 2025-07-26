@@ -1,6 +1,6 @@
 {
   "name": "@freshpress/init",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "license": "MIT",
   "exports": "./src/mod.ts",
   "compilerOptions": {

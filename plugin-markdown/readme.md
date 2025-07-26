@@ -1,13 +1,17 @@
 # Still can not be used in production, but it is a good start.
+
 # @freshpress/plugin-markdown
 
-A [Fresh](https://fresh.deno.dev) plugin for FreshPress that handles Markdown-based content.
+A [Fresh](https://fresh.deno.dev) plugin for FreshPress that handles
+Markdown-based content.
 
 ## Features
 
 - Scans a directory for `.md` files.
-- Automatically registers each Markdown file as a prerenderable route for static site generation.
-- Exports a `loadPost` function to easily load and render Markdown content within your route components.
+- Automatically registers each Markdown file as a prerenderable route for static
+  site generation.
+- Exports a `loadPost` function to easily load and render Markdown content
+  within your route components.
 
 ## Installation
 
@@ -23,7 +27,9 @@ Add this plugin to your `deno.json` file:
 
 ## Usage
 
-This plugin has two parts: the plugin itself, which you add to your `dev.ts` (or `fresh.config.ts`), and the `loadPost` function, which you use in your route file.
+This plugin has two parts: the plugin itself, which you add to your `dev.ts` (or
+`fresh.config.ts`), and the `loadPost` function, which you use in your route
+file.
 
 ### 1. Configure the plugin
 
@@ -43,7 +49,7 @@ markdownPlugin(builder, {
 });
 
 // ... other plugins and config
-const config = defineConfig({ /* ... */ });
+const config = defineConfig({/* ... */});
 
 if (Deno.args.includes("build")) {
   await builder.build(config);
@@ -54,7 +60,8 @@ if (Deno.args.includes("build")) {
 
 ### 2. Load data in your route
 
-In your dynamic route file (e.g., `routes/posts/[slug].tsx`), use the `loadPost` function to get the content for the page.
+In your dynamic route file (e.g., `routes/posts/[slug].tsx`), use the `loadPost`
+function to get the content for the page.
 
 ```tsx
 // routes/posts/[slug].tsx

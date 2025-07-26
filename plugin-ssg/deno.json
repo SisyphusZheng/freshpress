@@ -1,6 +1,6 @@
 {
   "name": "@freshpress/plugin-ssg",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "license": "MIT",
   "exports": "./src/mod.ts",
   "compilerOptions": {

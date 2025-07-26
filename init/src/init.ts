@@ -14,7 +14,7 @@ const POSTCSS_VERSION = "8.5.6";
 
 const PLUGIN_SSG_VERSION = "0.1.2";
 const PLUGIN_MARKDOWN_VERSION = "0.1.2";
-const DAISYUI_VERSION = "5.0.47"
+const DAISYUI_VERSION = "5.0.47";
 
 function css(strs: TemplateStringsArray, ...exprs: string[]): string {
   let out = "";
@@ -64,14 +64,17 @@ export async function initProject(
     force?: boolean | null;
     tailwind?: boolean | null;
     vscode?: boolean | null;
-  } = {}
+  } = {},
 ): Promise<void> {
   console.log();
   console.log(
     colors.bgRgb8(
-      colors.rgb8(" 📚 FreshPress: The SSG framework with Tailwind CSS & daisyUI ", 0),
-      121
-    )
+      colors.rgb8(
+        " 📚 FreshPress: The SSG framework with Tailwind CSS & daisyUI ",
+        0,
+      ),
+      121,
+    ),
   );
   console.log();
 
@@ -89,8 +92,8 @@ export async function initProject(
 
   try {
     const dir = [...Deno.readDirSync(projectDir)];
-    const isEmpty =
-      dir.length === 0 || (dir.length === 1 && dir[0].name === ".git");
+    const isEmpty = dir.length === 0 ||
+      (dir.length === 1 && dir[0].name === ".git");
     if (
       !isEmpty &&
       !(flags.force === null ? confirm(CONFIRM_EMPTY_MESSAGE) : flags.force)
@@ -113,7 +116,7 @@ export async function initProject(
       | string
       | Uint8Array
       | ReadableStream<Uint8Array>
-      | Record<string, unknown>
+      | Record<string, unknown>,
   ) => await writeProjectFile(projectDir, pathname, content);
 
   const GITIGNORE = `# dotenv environment variable files
@@ -169,7 +172,7 @@ CMD ["serve", "-A", "_fresh/server.js"]
   const TAILWIND_CSS = css`
     @import "tailwindcss";
     @plugin "daisyui";
-    ${GRADIENT_CSS}
+    ${GRADIENT_CSS};
   `;
 
   await writeFile("static/styles.css", TAILWIND_CSS);
@@ -360,28 +363,27 @@ export default function PostPage({ data }: PageProps<Post>) {
   // 修复 DEV_TS 导入路径
   const DEV_TS = `#!/usr/bin/env -S deno run -A --watch=static/,routes/,posts/
 import { Builder } from "fresh/dev";
-
 import { tailwind } from "@fresh/plugin-tailwind";
 import { markdownPlugin } from "@freshpress/plugin-markdown";
 import { ssgPlugin } from "@freshpress/plugin-ssg";
+import { app } from "./main.ts";
 
 const builder = new Builder();
 
 // Configure Tailwind CSS
 tailwind(builder);
 
-// Configure FreshPress Markdown to discover and add post routes
+// Configure FreshPress Markdown plugin
 markdownPlugin(builder, { contentDir: "./posts" });
 
-// Configure FreshPress SSG to copy files after build
-ssgPlugin(builder);
-
-const config = defineConfig({});
+// Configure FreshPress SSG plugin  
+ssgPlugin(builder, { outputDir: "_site", staticDir: "static" });
 
 if (Deno.args.includes("build")) {
-  await builder.build(config);
+  const apply = await builder.build();
+  apply(app);
 } else {
-  await builder.listen(config);
+  await builder.listen(() => Promise.resolve({ app }));
 }`;
   await writeFile("dev.ts", DEV_TS);
 
@@ -404,15 +406,19 @@ if (Deno.args.includes("build")) {
       fresh: `jsr:@fresh/core@^${FRESH_VERSION}`,
       preact: `npm:preact@^${PREACT_VERSION}`,
       "@preact/signals": `npm:@preact/signals@^${PREACT_SIGNALS_VERSION}`,
-      "@freshpress/plugin-ssg": `jsr:@freshpress/plugin-ssg@^${PLUGIN_SSG_VERSION}`,
-      "@freshpress/plugin-markdown": `jsr:@freshpress/plugin-markdown@^${PLUGIN_MARKDOWN_VERSION}`,
+      "@freshpress/plugin-ssg":
+        `jsr:@freshpress/plugin-ssg@^${PLUGIN_SSG_VERSION}`,
+      "@freshpress/plugin-markdown":
+        `jsr:@freshpress/plugin-markdown@^${PLUGIN_MARKDOWN_VERSION}`,
       "@deno/gfm": "jsr:@deno/gfm@0.11.0",
       "@std/front-matter": "jsr:@std/front-matter@0.2.0",
       "@std/path": "jsr:@std/path@1",
       "@std/fs/expand-glob": "jsr:@std/fs@^1.0.0-rc.8/expand-glob",
-      "tailwindcss": `npm:tailwindcss@^${TAILWINDCSS_VERSION}`,
-      "@fresh/plugin-tailwind": `jsr:@fresh/plugin-tailwind@^${FRESH_TAILWIND_VERSION}`,
-      "@tailwindcss/postcss": `npm:@tailwindcss/postcss@^${TAILWINDCSS_POSTCSS_VERSION}`,
+      tailwindcss: `npm:tailwindcss@^${TAILWINDCSS_VERSION}`,
+      "@fresh/plugin-tailwind":
+        `jsr:@fresh/plugin-tailwind@^${FRESH_TAILWIND_VERSION}`,
+      "@tailwindcss/postcss":
+        `npm:@tailwindcss/postcss@^${TAILWINDCSS_POSTCSS_VERSION}`,
       postcss: `npm:postcss@^${POSTCSS_VERSION}`,
       daisyui: `npm:daisyui@^${DAISYUI_VERSION}`,
     } as Record<string, string>,
@@ -507,7 +513,8 @@ For more components, visit: https://daisyui.com/
         references: [
           {
             name: "Tailwind Documentation",
-            url: "https://tailwindcss.com/docs/functions-and-directives#tailwind",
+            url:
+              "https://tailwindcss.com/docs/functions-and-directives#tailwind",
           },
         ],
       },
@@ -517,7 +524,7 @@ For more components, visit: https://daisyui.com/
           "Use the `@plugin` directive to register plugins with Tailwind CSS.",
         references: [
           {
-            name: "Tailwind Documentation",  
+            name: "Tailwind Documentation",
             url: "https://tailwindcss.com/docs/functions-and-directives#plugin",
           },
         ],
@@ -540,13 +547,16 @@ For more components, visit: https://daisyui.com/
 
   // Specifically print unresolvedDirectory, rather than resolvedDirectory in order to
   // not leak personal info (e.g. `/Users/MyName`)
-  console.log("\n%cProject initialized with Tailwind CSS & daisyUI!\n", "color: green; font-weight: bold");
+  console.log(
+    "\n%cProject initialized with Tailwind CSS & daisyUI!\n",
+    "color: green; font-weight: bold",
+  );
 
   if (unresolvedDirectory !== ".") {
     console.log(
       `Enter your project directory using %ccd ${unresolvedDirectory}%c.`,
       "color: cyan",
-      ""
+      "",
     );
   }
   console.log(
@@ -554,13 +564,13 @@ For more components, visit: https://daisyui.com/
     "color: cyan",
     "",
     "color: cyan",
-    ""
+    "",
   );
   console.log();
   console.log(
     "Documentation: %chttps://daisyui.com/%c for component reference.",
     "color: cyan",
-    ""
+    "",
   );
   console.log();
   console.log("%cHappy hacking with daisyUI! 🦕", "color: gray");
@@ -573,11 +583,11 @@ async function writeProjectFile(
     | string
     | Uint8Array
     | ReadableStream<Uint8Array>
-    | Record<string, unknown>
+    | Record<string, unknown>,
 ) {
   const filePath = path.join(
     projectDir,
-    ...pathname.split("/").filter(Boolean)
+    ...pathname.split("/").filter(Boolean),
   );
   try {
     await Deno.mkdir(path.dirname(filePath), { recursive: true });
@@ -595,7 +605,7 @@ async function writeProjectFile(
     } else {
       await Deno.writeTextFile(
         filePath,
-        JSON.stringify(content, null, 2) + "\n"
+        JSON.stringify(content, null, 2) + "\n",
       );
     }
   } catch (err) {

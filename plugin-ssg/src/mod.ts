@@ -3,86 +3,87 @@ import * as path from "@std/path";
 import { copy } from "@std/fs/copy";
 import { emptyDir } from "@std/fs/empty-dir";
 
-export interface SSGPluginOptions {
+export interface SSGOptions {
   outputDir?: string;
-  baseUrl?: string;
+  staticDir?: string;
+  copyAssets?: boolean;
 }
 
-export function ssgPlugin(
-  builder: Builder,
-  options: SSGPluginOptions = {}
-): void {
-  // The onBeforeBuild hook is no longer needed here, as markdownPlugin now handles adding routes.
-  (builder as any).onAfterBuild(
-    async (snapshot: { prerendered: Set<string> }) => {
-      await generateStaticSite(snapshot.prerendered, options);
-    }
+/**
+ * Fresh v2 SSG 插件 - 只注册一个文件转换器来处理构建后的复制
+ */
+export function ssgPlugin(builder: Builder, options: SSGOptions = {}): void {
+  const outputDir = path.resolve(Deno.cwd(), options.outputDir || "_site");
+  const staticDir = path.resolve(Deno.cwd(), options.staticDir || "static");
+  const copyAssets = options.copyAssets !== false;
+
+  // 使用 onTransformStaticFile 来在构建完成后执行SSG
+  builder.onTransformStaticFile(
+    { pattern: /.*/ }, // 匹配所有文件
+    async (file) => {
+      // 只在第一次触发时执行SSG
+      if (!ssgPlugin._executed) {
+        ssgPlugin._executed = true;
+        await executeSSG(
+          outputDir,
+          staticDir,
+          copyAssets,
+          builder.config.outDir,
+        );
+      }
+      return file; // 不修改文件内容
+    },
   );
 }
 
-export async function generateStaticSite(
-  prerenderedRoutes: Set<string>,
-  options: SSGPluginOptions = {}
-) {
-  const { outputDir = "_site" } = options;
-  const outputDirPath = path.resolve(Deno.cwd(), outputDir);
+// 标记是否已执行，避免重复执行
+(ssgPlugin as any)._executed = false;
 
+async function executeSSG(
+  outputDir: string,
+  staticDir: string,
+  copyAssets: boolean,
+  freshOutDir: string,
+): Promise<void> {
   console.log("🏗️  Starting static site generation...");
 
-  await emptyDir(outputDirPath);
-
-  // 1. Copy prerendered HTML files
-  const prerenderedDir = path.join(Deno.cwd(), "_fresh", "prerendered");
+  // 1. 清空输出目录
   try {
-    await copy(prerenderedDir, outputDirPath, { overwrite: true });
-    console.log("📂 Copied prerendered HTML files.");
-  } catch (err) {
-    if (err instanceof Deno.errors.NotFound) {
-      if (prerenderedRoutes.size > 0) {
-        console.warn(
-          "Warning: '_fresh/prerendered' directory not found, but routes were expected."
-        );
-      }
-    } else {
-      console.error(
-        `Error: Could not copy prerendered files:`,
-        (err as Error).message
-      );
-      return;
-    }
+    await emptyDir(outputDir);
+    console.log("🗑️  Cleaned output directory");
+  } catch (error) {
+    console.warn("Warning: Could not clean output directory:", error.message);
   }
 
-  // 2. Copy static assets (JS, CSS, etc.) from the build output
-  const buildDir = path.join(Deno.cwd(), "_fresh", "static");
+  // 2. 复制Fresh构建的静态文件
   try {
-    await copy(buildDir, outputDirPath, { overwrite: true });
-    console.log("📂 Copied build assets.");
+    await copy(freshOutDir, outputDir, { overwrite: true });
+    console.log("📂 Copied Fresh build output");
   } catch (err) {
     console.warn(
-      "Warning: Could not copy build assets:",
-      (err as Error).message
+      "Warning: Could not copy Fresh build output:",
+      (err as Error).message,
     );
   }
 
-  // 3. Copy public static assets (images, fonts, etc.)
-  const staticDir = path.join(Deno.cwd(), "static");
-  try {
-    await copy(staticDir, outputDirPath, {
-      overwrite: true,
-    });
-    console.log("📂 Copied public static assets.");
-  } catch (err) {
-    if (!(err instanceof Deno.errors.NotFound)) {
-      console.warn(
-        "Warning: Could not copy static assets:",
-        (err as Error).message
-      );
+  // 3. 复制静态资源
+  if (copyAssets) {
+    try {
+      await copy(staticDir, outputDir, { overwrite: true });
+      console.log("📂 Copied static assets");
+    } catch (err) {
+      if (!(err instanceof Deno.errors.NotFound)) {
+        console.warn(
+          "Warning: Could not copy static assets:",
+          (err as Error).message,
+        );
+      }
     }
   }
 
   console.log(
-    `✅ Static site generation completed! Output in /${path.basename(
-      outputDirPath
-    )}`
+    `✅ Static site generation completed! Output in ${
+      path.basename(outputDir)
+    }`,
   );
 }

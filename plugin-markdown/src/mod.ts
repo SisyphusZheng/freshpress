@@ -7,7 +7,7 @@ import { expandGlob } from "@std/fs/expand-glob";
 export interface Post {
   slug: string;
   title: string;
-  content: string; // The HTML content
+  content: string;
   attrs: Record<string, unknown>;
 }
 
@@ -17,41 +17,23 @@ export interface MarkdownOptions {
 }
 
 /**
- * A Fresh plugin that discovers markdown files and adds them as prerenderable routes.
+ * Fresh v2 Markdown 插件 - 只提供数据加载功能
+ * 不能依赖Builder的钩子，因为它们不存在
  */
 export function markdownPlugin(
   builder: Builder,
-  options: MarkdownOptions = {}
+  options: MarkdownOptions = {},
 ): void {
-  // FIX: Use 'as any' to bypass incomplete type definitions for Builder
-  (builder as any).onBeforeBuild(async () => {
-    const { contentDir = "./posts" } = options;
-    const postsDir = path.resolve(Deno.cwd(), contentDir);
-    const routeBasePath = options.routeBasePath ?? path.basename(postsDir);
-    const globPattern = path.join(postsDir, "**/*.md");
-
-    console.log("[markdown] Discovering posts...");
-    let count = 0;
-    for await (const file of expandGlob(globPattern)) {
-      if (file.isFile) {
-        const slug = path.relative(postsDir, file.path).replace(/\.md$/, "");
-        const route = `/${routeBasePath}/${slug}`;
-        // FIX: Use 'as any' to bypass incomplete type definitions for Builder
-        (builder as any).addPrerenderedRoute(route);
-        count++;
-      }
-    }
-    console.log(`[markdown] Added ${count} post routes for prerendering.`);
-  });
+  // Builder 没有钩子，这个插件主要提供工具函数
+  console.log("[markdown] Plugin loaded, providing utility functions");
 }
 
 /**
- * Loads a single post from a markdown file.
- * This is used by the route component to get the data for a specific page.
+ * 加载单个文章
  */
 export async function loadPost(
   slug: string,
-  options: MarkdownOptions = {}
+  options: MarkdownOptions = {},
 ): Promise<Post | null> {
   const { contentDir = "./posts" } = options;
   const postsDir = path.resolve(Deno.cwd(), contentDir);
@@ -64,10 +46,8 @@ export async function loadPost(
 
     return {
       slug,
-      // FIX: Cast attrs to 'any' to access properties not defined in its base type
       title: ((attrs as any)?.title as string) || "Untitled Post",
       content,
-      // FIX: Cast attrs to 'any' to satisfy the more specific 'Record' type
       attrs: (attrs as any) || {},
     };
   } catch (err) {
@@ -76,4 +56,36 @@ export async function loadPost(
     }
     throw err;
   }
+}
+
+/**
+ * 获取所有文章
+ */
+export async function getAllPosts(contentDir = "./posts"): Promise<Post[]> {
+  const postsDir = path.resolve(Deno.cwd(), contentDir);
+  const globPattern = path.join(postsDir, "**/*.md");
+  const posts: Post[] = [];
+
+  try {
+    for await (const file of expandGlob(globPattern)) {
+      if (file.isFile) {
+        const slug = path.relative(postsDir, file.path).replace(/\.md$/, "");
+        const post = await loadPost(slug, { contentDir });
+        if (post) {
+          posts.push(post);
+        }
+      }
+    }
+  } catch (error) {
+    console.warn(
+      `Warning: Could not scan directory ${contentDir}:`,
+      error.message,
+    );
+  }
+
+  return posts.sort((a, b) => {
+    const dateA = (a.attrs.date as string) || "1970-01-01";
+    const dateB = (b.attrs.date as string) || "1970-01-01";
+    return new Date(dateB).getTime() - new Date(dateA).getTime();
+  });
 }
