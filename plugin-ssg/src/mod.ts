@@ -9,8 +9,11 @@ export interface SSGOptions {
   copyAssets?: boolean;
 }
 
+// 全局标记，避免重复执行
+let ssgExecuted = false;
+
 /**
- * Fresh v2 SSG 插件 - 只注册一个文件转换器来处理构建后的复制
+ * Fresh v2 SSG 插件 - 使用文件转换器来处理构建后的复制
  */
 export function ssgPlugin(builder: Builder, options: SSGOptions = {}): void {
   const outputDir = path.resolve(Deno.cwd(), options.outputDir || "_site");
@@ -19,31 +22,28 @@ export function ssgPlugin(builder: Builder, options: SSGOptions = {}): void {
 
   // 使用 onTransformStaticFile 来在构建完成后执行SSG
   builder.onTransformStaticFile(
-    { pattern: /.*/ }, // 匹配所有文件
+    /.*/, // 匹配所有文件的正则表达式
     async (file) => {
       // 只在第一次触发时执行SSG
-      if (!ssgPlugin._executed) {
-        ssgPlugin._executed = true;
+      if (!ssgExecuted) {
+        ssgExecuted = true;
         await executeSSG(
           outputDir,
           staticDir,
           copyAssets,
-          builder.config.outDir,
+          builder.config.outDir
         );
       }
       return file; // 不修改文件内容
-    },
+    }
   );
 }
-
-// 标记是否已执行，避免重复执行
-(ssgPlugin as any)._executed = false;
 
 async function executeSSG(
   outputDir: string,
   staticDir: string,
   copyAssets: boolean,
-  freshOutDir: string,
+  freshOutDir: string
 ): Promise<void> {
   console.log("🏗️  Starting static site generation...");
 
@@ -52,7 +52,10 @@ async function executeSSG(
     await emptyDir(outputDir);
     console.log("🗑️  Cleaned output directory");
   } catch (error) {
-    console.warn("Warning: Could not clean output directory:", error.message);
+    console.warn(
+      "Warning: Could not clean output directory:",
+      (error as Error).message
+    );
   }
 
   // 2. 复制Fresh构建的静态文件
@@ -62,7 +65,7 @@ async function executeSSG(
   } catch (err) {
     console.warn(
       "Warning: Could not copy Fresh build output:",
-      (err as Error).message,
+      (err as Error).message
     );
   }
 
@@ -75,15 +78,13 @@ async function executeSSG(
       if (!(err instanceof Deno.errors.NotFound)) {
         console.warn(
           "Warning: Could not copy static assets:",
-          (err as Error).message,
+          (err as Error).message
         );
       }
     }
   }
 
   console.log(
-    `✅ Static site generation completed! Output in ${
-      path.basename(outputDir)
-    }`,
+    `✅ Static site generation completed! Output in ${path.basename(outputDir)}`
   );
 }

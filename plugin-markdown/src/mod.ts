@@ -22,7 +22,7 @@ export interface MarkdownOptions {
  */
 export function markdownPlugin(
   builder: Builder,
-  options: MarkdownOptions = {},
+  options: MarkdownOptions = {}
 ): void {
   // Builder 没有钩子，这个插件主要提供工具函数
   console.log("[markdown] Plugin loaded, providing utility functions");
@@ -33,7 +33,7 @@ export function markdownPlugin(
  */
 export async function loadPost(
   slug: string,
-  options: MarkdownOptions = {},
+  options: MarkdownOptions = {}
 ): Promise<Post | null> {
   const { contentDir = "./posts" } = options;
   const postsDir = path.resolve(Deno.cwd(), contentDir);
@@ -79,7 +79,7 @@ export async function getAllPosts(contentDir = "./posts"): Promise<Post[]> {
   } catch (error) {
     console.warn(
       `Warning: Could not scan directory ${contentDir}:`,
-      error.message,
+      (error as Error).message
     );
   }
 
