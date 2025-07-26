@@ -73,7 +73,7 @@ export async function initProject(
 
   let unresolvedDirectory = Deno.args[0];
   if (input.length !== 1) {
-    const userInput = prompt("Project Name:", "fresh-project");
+    const userInput = prompt("Project Name:", "freshpress-project");
     if (!userInput) {
       error(HELP_TEXT);
     }
