@@ -20,71 +20,64 @@ export function ssgPlugin(builder: Builder, options: SSGOptions = {}): void {
   const staticDir = path.resolve(Deno.cwd(), options.staticDir || "static");
   const copyAssets = options.copyAssets !== false;
 
-  // 使用 onTransformStaticFile 来在构建完成后执行SSG
-  builder.onTransformStaticFile(
-    /.*/, // 匹配所有文件的正则表达式
-    async (file) => {
-      // 只在第一次触发时执行SSG
-      if (!ssgExecuted) {
-        ssgExecuted = true;
-        await executeSSG(
-          outputDir,
-          staticDir,
-          copyAssets,
-          builder.config.outDir
-        );
-      }
-      return file; // 不修改文件内容
+  builder.onTransformStaticFile(async (file) => {
+    // 只在第一次触发时执行SSG
+    if (!ssgExecuted) {
+      ssgExecuted = true;
+      await executeSSG(outputDir, staticDir, copyAssets, builder.config.outDir);
     }
-  );
-}
+    return file; // 不修改文件内容
+  });
 
-async function executeSSG(
-  outputDir: string,
-  staticDir: string,
-  copyAssets: boolean,
-  freshOutDir: string
-): Promise<void> {
-  console.log("🏗️  Starting static site generation...");
+  async function executeSSG(
+    outputDir: string,
+    staticDir: string,
+    copyAssets: boolean,
+    freshOutDir: string
+  ): Promise<void> {
+    console.log("🏗️  Starting static site generation...");
 
-  // 1. 清空输出目录
-  try {
-    await emptyDir(outputDir);
-    console.log("🗑️  Cleaned output directory");
-  } catch (error) {
-    console.warn(
-      "Warning: Could not clean output directory:",
-      (error as Error).message
-    );
-  }
-
-  // 2. 复制Fresh构建的静态文件
-  try {
-    await copy(freshOutDir, outputDir, { overwrite: true });
-    console.log("📂 Copied Fresh build output");
-  } catch (err) {
-    console.warn(
-      "Warning: Could not copy Fresh build output:",
-      (err as Error).message
-    );
-  }
-
-  // 3. 复制静态资源
-  if (copyAssets) {
+    // 1. 清空输出目录
     try {
-      await copy(staticDir, outputDir, { overwrite: true });
-      console.log("📂 Copied static assets");
+      await emptyDir(outputDir);
+      console.log("🗑️  Cleaned output directory");
+    } catch (error) {
+      console.warn(
+        "Warning: Could not clean output directory:",
+        (error as Error).message
+      );
+    }
+
+    // 2. 复制Fresh构建的静态文件
+    try {
+      await copy(freshOutDir, outputDir, { overwrite: true });
+      console.log("📂 Copied Fresh build output");
     } catch (err) {
-      if (!(err instanceof Deno.errors.NotFound)) {
-        console.warn(
-          "Warning: Could not copy static assets:",
-          (err as Error).message
-        );
+      console.warn(
+        "Warning: Could not copy Fresh build output:",
+        (err as Error).message
+      );
+    }
+
+    // 3. 复制静态资源
+    if (copyAssets) {
+      try {
+        await copy(staticDir, outputDir, { overwrite: true });
+        console.log("📂 Copied static assets");
+      } catch (err) {
+        if (!(err instanceof Deno.errors.NotFound)) {
+          console.warn(
+            "Warning: Could not copy static assets:",
+            (err as Error).message
+          );
+        }
       }
     }
-  }
 
-  console.log(
-    `✅ Static site generation completed! Output in ${path.basename(outputDir)}`
-  );
+    console.log(
+      `✅ Static site generation completed! Output in ${path.basename(
+        outputDir
+      )}`
+    );
+  }
 }
